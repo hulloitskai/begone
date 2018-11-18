@@ -1,0 +1,49 @@
+## [Repository]
+## The compiled binary (excluding Go source files):
+/build/
+/begone*
+!/begone*.*
+/begone*.exe
+
+## Miscellaneous:
+coverage.out
+
+## Secrets:
+.env
+
+
+## [Go]
+## Binaries for programs and plugins:
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+## Test binary, build with `go test -c`.
+*.test
+## Output of the go coverage tool, specifically when used with LiteIDE.
+*.out
+## Vendored packages.
+vendor/
+
+
+## [System Files]
+## macOS:
+.DS_Store
+.DS_Store?
+*.swp
+
+## Windows:
+Thumbs.db
+
+## VSCode (keeping workspace configurations):
+.vscode/*
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+
+
+## [Miscellaneous]
+## git-secret:
+.gitsecret/keys/random_seed
