@@ -8,8 +8,8 @@ obliterating conversation threads on
 
 ### Ready-to-install releases
 
-Grab the [latest release](https://github.com/stevenxie/begone) compiled for
-your system.
+Grab the [latest release](https://github.com/stevenxie/begone/releases) compiled
+for your system.
 
 ### Making from source
 

@@ -4,8 +4,9 @@ ifeq ($(shell ls -1 go.mod 2> /dev/null),go.mod) # use module name from go.mod, 
 	PKG_NAME = $(shell basename "$$(cat go.mod | grep module | awk '{print $$2}')")
 endif
 
-MAINDIR = "."
 SECRETS = false
+MAINDIR = "."
+OUTDIR  = "."
 
 
 ## Source configs:
@@ -26,7 +27,7 @@ default: build-run
 
 ## Setup sets up this project on a new device.
 setup: setup-hooks dl
-	@if [ "$(SECRETS)" == true ]; then $(REVEALSECRETSCMD); fi
+	@if [ "$(SECRETS)" == true ]; then $(REVEAL_SECRETS_CMD); fi
 
 
 ## [Git setup / configuration commands]
@@ -47,10 +48,10 @@ hide-secrets:
 	@git secret hide -m
 
 ## Reveal files hidden by git-secret.
-REVEALSECRETSCMD = git secret reveal
+REVEAL_SECRETS_CMD = git secret reveal
 reveal-secrets:
 	@echo "Revealing secret files..."
-	@$(REVEALSECRETSCMD)
+	@$(REVEAL_SECRETS_CMD)
 
 
 ## [Go setup / configuration commands]
@@ -64,9 +65,9 @@ init:
 	@go mod init $(MODPATH)
 
 ## Verifies that Go module dependencies are satisfied.
-VERIFYCMD = echo "Verifying Go module dependencies..."; go mod verify
+VERIFY_CMD = echo "Verifying Go module dependencies..."; go mod verify
 verify:
-	@$(VERIFYCMD)
+	@$(VERIFY_CMD)
 
 ## Downloads Go module dependencies.
 dl:
@@ -114,34 +115,34 @@ get:
 ## Variables: SRCENV (boolean which determines whether or not to check and
 ##            source .env.sh)
 SRCENV = true
-RUNCMD = if [ -f ".env.sh" ] && [ "$(SRCENV)" == true ]; then \
+OUTPATH = $(OUTDIR)/$(PKG_NAME)
+RUN_CMD = if [ -f ".env.sh" ] && [ "$(SRCENV)" == true ]; then \
 	  echo 'Configuring environment variables by sourcing ".env.sh"...'; \
 	  . .env.sh; \
 	  printf "done\n\n"; \
 	fi; \
-	if [ -f "$(PKG_NAME)" ]; then \
+	if [ -f "$(OUTPATH)" ]; then \
 	  echo 'Running "$(PKG_NAME)"...'; \
-	  ./$(PKG_NAME); \
+	  ./$(OUTPATH); \
 	else \
-	  echo 'run: could not find program "$(PKG_NAME)".' >&2; \
+	  echo 'run: could not find program "$(OUTPATH)".' >&2; \
 	  exit 1; \
 	fi
 run:
-	@$(RUNCMD)
+	@$(RUN_CMD)
 
 ## Builds (compiles) the program for this system.
 ## Variables:
 ##   - OUTDIR (output directory to place built binaries)
 ##   - MAINDIR (directory of the main package)
 ##   - BUILDARGS (additional arguments to pass to "go build")
-OUTDIR = .
 BUILDARGS =
-BUILDCMD = echo 'Building "$(PKG_NAME)" for this system...'; \
+BUILD_CMD = echo 'Building "$(PKG_NAME)" for this system...'; \
 	go build -o "$$(echo $(OUTDIR) | tr -s '/')/$(PKG_NAME)" $(BUILDARGS) \
 	  $(MAINDIR) && \
 	echo "done"
 build:
-	@$(BUILDCMD)
+	@$(BUILD_CMD)
 
 ## Builds (cross-compiles) the program for all systems.
 ## Variables:
@@ -162,7 +163,7 @@ build-all:
 		    printf "\nError during build:\n" >&2; \
 		    echo "$$GOBUILD_OUT" >&2; \
 		    exit 1; \
-		  else echo "done"; \
+		  else printf "\tdone\n"; \
 		  fi; \
 		done; \
 	done
@@ -170,7 +171,7 @@ build-all:
 ## Builds (compiles) the program for this system, and runs it.
 ## Sources .env.sh before running, if it exists.
 build-run:
-	@$(BUILDCMD) && echo "" && $(RUNCMD)
+	@$(BUILD_CMD) && echo "" && $(RUN_CMD)
 
 ## Cleans build artifacts (executables, object files, etc.).
 clean:
@@ -187,71 +188,71 @@ install:
 .PHONY: fmt lint vet check
 
 ## Formats the source code using "gofmt".
-FMTCMD = if ! which gofmt > /dev/null; then \
+FMT_CMD = if ! which gofmt > /dev/null; then \
 	  echo '"gofmt" is required to format source code.'; \
 	else \
 	  echo 'Formatting source code using "gofmt"...'; \
 	  gofmt -l -s -w . && echo "done"; \
 	fi
 fmt:
-	@$(FMTCMD)
+	@$(FMT_CMD)
 
 ## Lints the source code using "golint".
-LINTCMD = if ! which golint > /dev/null; then \
+LINT_CMD = if ! which golint > /dev/null; then \
 	  echo '"golint" is required to lint soure code.'; \
 	else \
 	  echo 'Formatting source code using "golint"...'; \
 	  golint ./... && echo "done"; \
 	fi
 lint:
-	@$(LINTCMD)
+	@$(LINT_CMD)
 
 ## Checking for suspicious code using "go vet".
-VETCMD = echo 'Checking for suspicious code using "go vet"...'; \
+VET_CMD = echo 'Checking for suspicious code using "go vet"...'; \
 	go vet && echo "done"
 vet:
-	@$(VETCMD)
+	@$(VET_CMD)
 
 ## Checks for formatting, linting, and suspicious code.
-CHECKCMD = $(FMTCMD) && echo "" && $(LINTCMD) && echo "" && $(VETCMD)
+CHECK_CMD = $(FMT_CMD) && echo "" && $(LINT_CMD) && echo "" && $(VET_CMD)
 check:
-	@$(CHECKCMD)
+	@$(CHECK_CMD)
 
 
 ## [Testing commands]
 .PHONY: test test-v test-race test-race-v bench bench-v
 
-TESTCMD = go test ./... -coverprofile=$(COVER_OUT) \
+TEST_CMD = go test ./... -coverprofile=$(COVER_OUT) \
 		               -covermode=atomic \
 		               -timeout=$(TEST_TIMEOUT)
 test:
 	@echo "Testing:"
-	@$(TESTCMD)
+	@$(TEST_CMD)
 test-v:
 	@echo "Testing (verbose):"
-	@$(TESTCMD) -v
+	@$(TEST_CMD) -v
 
-TESTCMD_RACE = $(TESTCMD) -race
+TEST_CMD_RACE = $(TEST_CMD) -race
 test-race:
 	@echo "Testing (race):"
-	@$(TESTCMD_RACE)
+	@$(TEST_CMD_RACE)
 test-race-v:
 	@printf "Testing (race, verbose):\n"
-	@$(TESTCMD_RACE) -v
+	@$(TEST_CMD_RACE) -v
 
-BENCHCMD = $(TESTCMD) ./... -run=^$$ -bench=. -benchmem
+BENCH_CMD = $(TEST_CMD) ./... -run=^$$ -bench=. -benchmem
 bench:
 	@printf "Benchmarking:\n"
-	@$(BENCHCMD)
+	@$(BENCH_CMD)
 bench-v:
 	@printf "Benchmarking (verbose):\n"
-	@$(BENCHCMD) -v
+	@$(BENCH_CMD) -v
 
 
 ## [Reviewing commands]
 .PHONY: review review-race review-bench check fmt
 __review_base:
-	@$(VERIFYCMD) && echo "" && $(CHECKCMD) && echo ""
+	@$(VERIFY_CMD) && echo "" && $(CHECK_CMD) && echo ""
 
 ## Formats, checks, and tests the code.
 review: __review_base test

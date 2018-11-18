@@ -60,8 +60,8 @@ func (e *Engine) Spam(g strgen.Generator, reps int) error {
 
 		// Prevent Facebook from getting too suspicious (ensure 100ms have passed).
 		diff := time.Now().Sub(startTime)
-		if diff.Nanoseconds() < 10000000 {
-			time.Sleep(startTime.Add(100 * time.Millisecond).Sub(time.Now()))
+		if diff.Nanoseconds() < 1000000 {
+			time.Sleep(startTime.Add(10 * time.Millisecond).Sub(time.Now()))
 		}
 	}
 
