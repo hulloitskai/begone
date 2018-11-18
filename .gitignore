@@ -1,12 +1,11 @@
 ## [Repository]
+coverage.out
+
 ## The compiled binary (excluding Go source files):
 /build/
 /begone*
 !/begone*.*
 /begone*.exe
-
-## Miscellaneous:
-coverage.out
 
 ## Secrets:
 .env
