@@ -10,7 +10,5 @@ require (
 	github.com/unixpickle/essentials v0.0.0-20180916162721-ae02bc395f1d
 	github.com/urfave/cli v1.20.0
 	golang.org/x/crypto v0.0.0-20181112202954-3d3f9f413869 // indirect
-	golang.org/x/net v0.0.0-20181114220301-adae6a3d119a
 	golang.org/x/sys v0.0.0-20181107165924-66b7b1311ac8 // indirect
-	golang.org/x/text v0.3.0 // indirect
 )

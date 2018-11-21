@@ -15,7 +15,6 @@ Messenger client. And, obviously, written in [Go](https://golang.org).
 <p align="center">
   <img src="./.github/demo.gif" width=600>
 </p>
-<br />
 
 ## Usage
 
