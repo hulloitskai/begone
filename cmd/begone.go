@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"net/url"
 	"os"
+	"os/signal"
 	"strings"
 
 	"github.com/stevenxie/begone/config"
@@ -79,8 +80,36 @@ func Begone(ctx *cli.Context, gen strgen.Generator, convoID string) error {
 	spinner.Stop()
 	fmt.Println()
 
-	// Begin attack.
+	// Begin attack, watch out for kill signals.
 	spinner = attackSpinner(nil)
+	var killed bool
+
+	// Subscribe to updates from bot.Counter.
+	bot.Counter = make(chan int)
+	go func() {
+		sfx := spinner.Suffix
+		for count := range bot.Counter {
+			spinner.Suffix = fmt.Sprintf("%s (sent: %d)", sfx, count)
+		}
+
+		// In the event that an interrupt occurrred.
+		if killed {
+			spinner.FinalMSG = "Killed bot (caught interrupt signal)."
+			spinner.Stop()
+			os.Exit(0)
+		}
+	}()
+
+	// Subscribe to interrupt signals.
+	sigch := make(chan os.Signal, 1)
+	signal.Notify(sigch, os.Interrupt)
+	go func() {
+		for range sigch {
+			bot.Kill() // kill bot upon interrupt.
+			killed = true
+		}
+	}()
+
 	if err = bot.Begone(convoID); err != nil {
 		spinner.FinalMSG = "Attack was interrupted."
 		return err

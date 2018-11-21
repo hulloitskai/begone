@@ -20,7 +20,8 @@ type Bot struct {
 	// method.
 	Counter chan int
 
-	Cfg *Config
+	Cfg        *Config
+	killswitch bool // stops Begone loop if active
 }
 
 // NewBot returns a new Bot with a nil Session.
@@ -74,13 +75,9 @@ func (b *Bot) Begone(convoID string) error {
 		}
 	}
 
+	// The Begone™ Spam Loop.
 	var count int
-	for b.HasMore() {
-		// Pre-cycle checks.
-		if count == b.Cfg.Cycles {
-			break
-		}
-
+	for b.HasMore() && (count != b.Cfg.Cycles) && (!b.killswitch) {
 		// Message generation cycle.
 		msg, err := b.Generate()
 		if err != nil {
@@ -100,6 +97,18 @@ func (b *Bot) Begone(convoID string) error {
 			time.Sleep(time.Duration(b.Cfg.Delay) * time.Millisecond)
 		}
 		count++
+		if b.Counter != nil { // update counter if applicable
+			b.Counter <- count
+		}
+	}
+
+	if b.Counter != nil { // send close signal if applicable
+		close(b.Counter)
 	}
 	return nil
+}
+
+// Kill activates the Bot's killswitch, stopping a active Begone loop.
+func (b *Bot) Kill() {
+	b.killswitch = true
 }
