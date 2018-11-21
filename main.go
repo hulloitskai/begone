@@ -1,6 +1,9 @@
 package main
 
 import (
+	"fmt"
+	"os"
+
 	"github.com/stevenxie/begone/cmd"
 	gencmd "github.com/stevenxie/begone/strgen/cmd"
 	"github.com/urfave/cli"
@@ -15,6 +18,7 @@ func main() {
 	app.Version = cmd.Version
 	app.HideVersion = true
 	app.Flags = cmd.GlobalFlags
+	app.CommandNotFound = commandNotFound
 
 	// Configure app commands.
 	app.Commands = []cli.Command{cmd.LoginCmd}
@@ -22,4 +26,9 @@ func main() {
 
 	// Run app.
 	app.RunAndExitOnError()
+}
+
+func commandNotFound(_ *cli.Context, command string) {
+	fmt.Fprintf(os.Stderr, "No such command '%v'\n", command)
+	os.Exit(1)
 }

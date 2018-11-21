@@ -15,10 +15,10 @@ func botConfig(ctx *cli.Context, cfg *config.Config) *mbot.Config {
 	mcfg.Password = cfg.Password
 
 	if ctx.GlobalIsSet("cycles") {
-		mcfg.Cycles = ctx.Int("cycles")
+		mcfg.Cycles = ctx.GlobalInt("cycles")
 	}
 	if ctx.GlobalIsSet("delay") {
-		mcfg.Delay = ctx.Int("delay")
+		mcfg.Delay = ctx.GlobalInt("delay")
 	}
 	return mcfg
 }

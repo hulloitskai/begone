@@ -4,6 +4,19 @@ _A fully automatic spamming tool, created for the sole purpose of
 obliterating conversation threads on
 [Facebook Messenger](https://messenger.com)._
 
+[![grp-img]][grp]
+
+It works with individual conversations as well as group threads—a real versatile
+beast. Uses a modified version of
+[`unixpickle/fbmsgr`](https://github.com/unixpickle/fbmsgr) as the underlying
+Messenger client. And, obviously, written in [Go](https://golang.org).
+
+<br />
+<p align="center">
+  <img src="./.github/demo.gif" width=600>
+</p>
+<br />
+
 ## Usage
 
 ### Installing
@@ -25,8 +38,8 @@ $ chmod u+x /usr/local/bin/begone
 ## Save login credentials to ~/.begone.json.
 $ begone login
 
-## Launch an emoji attack on this conversation thread.
-$ begone emoji https://messenger.com/t/exampleid
+## Launch an emoji attack on a conversation thread.
+$ begone emojify https://messenger.com/t/exampleid
 ```
 
 <br />
@@ -40,8 +53,15 @@ $ begone emoji https://messenger.com/t/exampleid
 
 ```bash
 ## Clone this repository.
-$ git clone git@github.com:stevenxie/begone
+$ git clone git@github.com:stevenxie/begone.git
 
 ## Compile and install a version for your machine.
 $ make install  # (or go install)
 ```
+
+## TODOs
+
+- [ ] (maybe) Implement attacks using local files (images)?
+
+[grp]: https://goreportcard.com/report/github.com/stevenxie/begone
+[grp-img]: https://goreportcard.com/badge/github.com/stevenxie/begone

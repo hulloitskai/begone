@@ -16,6 +16,8 @@ type Emojifier struct {
 
 	index int    // keeps track of how many iterations have passed
 	src   []rune // a set of emojis available for use
+
+	rng *rand.Rand // random number source
 }
 
 // NewEmojifier makes a new Emojifier
@@ -30,7 +32,13 @@ func NewEmojifier(mode string) (*Emojifier, error) {
 	default:
 		return nil, fmt.Errorf("strgen: unknown mode '%s'", mode)
 	}
-	return &Emojifier{Mode: mode, src: emoji.GetEmojis()}, nil
+
+	src := rand.NewSource(time.Now().UnixNano())
+	return &Emojifier{
+		Mode: mode,
+		src:  emoji.GetEmojis(),
+		rng:  rand.New(src),
+	}, nil
 }
 
 // Generate generates emojis, using a pattern based on e.Mode.
@@ -73,15 +81,12 @@ func (e *Emojifier) HasMore() bool {
 
 // RandomN returns a string consisting of n pseudorandom emojis.
 func (e *Emojifier) RandomN(n int) (string, error) {
-	rand.NewSource(time.Now().UnixNano())
-
 	builder := new(strings.Builder)
 	for i := 0; i < n; i++ {
-		emojiIndex := rand.Intn(len(e.src))
+		emojiIndex := e.rng.Intn(len(e.src))
 		if _, err := builder.WriteRune(e.src[emojiIndex]); err != nil {
 			return "", ess.AddCtx("strgen: building emoji string", err)
 		}
 	}
-
 	return builder.String(), nil
 }

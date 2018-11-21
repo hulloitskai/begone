@@ -1,6 +1,7 @@
 package cmd
 
 import (
+	"bufio"
 	"fmt"
 	"os"
 
@@ -31,21 +32,14 @@ var (
 
 func repeat(ctx *cli.Context) error {
 	// Ensure arguments are valid.
-	nargs := len(ctx.Args())
-	if nargs > 2 {
+	args := ctx.Args()
+	if len(args) > 2 {
 		fmt.Fprint(os.Stderr, "Too many arguments.\n\n")
 		cli.ShowCommandHelpAndExit(ctx, RepeatCmdName, 1)
 	}
-	if nargs == 1 {
-		fmt.Fprint(os.Stderr, "Single argument is ambiguous. Use none or two!\n\n")
-		cli.ShowCommandHelpAndExit(ctx, RepeatCmdName, 1)
-	}
 
-	var msg, convoID string
-	if nargs == 2 {
-		msg = ctx.Args()[0]
-		convoID = ctx.Args()[1]
-	} else {
+	var msg, convoID = args.Get(0), args.Get(1)
+	if msg == "" {
 		var err error
 		if msg, err = queryRepeatMsg(); err != nil {
 			return ess.AddCtx("cmd: requesting repeat message", err)
@@ -58,10 +52,15 @@ func repeat(ctx *cli.Context) error {
 
 // queryRepeatMsg requests the message to repeat from stdin.
 func queryRepeatMsg() (string, error) {
-	var msg string
+	var (
+		msg string
+		err error
+	)
+
 	for msg == "" {
 		fmt.Println("Enter the message to repeat: ")
-		if _, err := fmt.Scanf("%s", &msg); err != nil {
+		r := bufio.NewReader(os.Stdin)
+		if msg, err = r.ReadString('\n'); err != nil {
 			return "", err
 		}
 
@@ -69,5 +68,6 @@ func queryRepeatMsg() (string, error) {
 			fmt.Fprintln(os.Stderr, "Message must be non-empty!")
 		}
 	}
+
 	return msg, nil
 }

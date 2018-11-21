@@ -20,8 +20,7 @@ const (
 	Desc    = "a fully automatic spamming tool for FB Messenger"
 	Version = "0.2.0"
 	Author  = "Steven Xie <hello@stevenxie.me>"
-
-	Usage = `begone [global options] <command> [command options] [arguments...]
+	Usage   = `begone [global options] <command> [command options] [arguments...]
 
 
 For more information about a command, run: begone help <command>`
