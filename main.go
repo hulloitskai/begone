@@ -16,7 +16,6 @@ func main() {
 	app.Usage = cmd.Desc
 	app.UsageText = cmd.Usage
 	app.Version = cmd.Version
-	app.HideVersion = true
 	app.Flags = cmd.GlobalFlags
 	app.CommandNotFound = commandNotFound
 	app.EnableBashCompletion = true

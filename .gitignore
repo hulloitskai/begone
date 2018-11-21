@@ -3,7 +3,10 @@ coverage.out
 
 ## The compiled binary (excluding Go source files):
 /build/
-
+/dist/
+/*begone*
+!/*begone*/
+!/*begone*.go
 ## Secrets:
 .env
 
