@@ -19,6 +19,7 @@ func main() {
 	app.HideVersion = true
 	app.Flags = cmd.GlobalFlags
 	app.CommandNotFound = commandNotFound
+	app.EnableBashCompletion = true
 
 	// Configure app commands.
 	app.Commands = []cli.Command{cmd.LoginCmd}
