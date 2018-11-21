@@ -3,9 +3,6 @@ coverage.out
 
 ## The compiled binary (excluding Go source files):
 /build/
-/begone*
-!/begone*.*
-/begone*.exe
 
 ## Secrets:
 .env
@@ -39,7 +36,7 @@ Thumbs.db
 .vscode/*
 !.vscode/settings.json
 !.vscode/tasks.json
-!.vscode/launch.json
+#!.vscode/launch.json
 !.vscode/extensions.json
 
 

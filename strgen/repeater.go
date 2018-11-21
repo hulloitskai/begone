@@ -1,20 +1,22 @@
 package strgen
 
 // Repeater is a Generator that simply returns the same string every time.
-type Repeater string
-
-// NewRepeater creates a Repeater from s.
-func NewRepeater(s string) Repeater {
-	return Repeater(s)
+type Repeater struct {
+	Msg string
 }
 
-// HasMore returns true if Generator has more output to produce, and false
-// otherwise.
-func (r Repeater) HasMore() bool {
+// NewRepeater creates a Repeater from s.
+func NewRepeater(s string) *Repeater {
+	return &Repeater{Msg: s}
+}
+
+// HasMore indicates whether or not the repeater has more text to generate
+// (always true).
+func (r *Repeater) HasMore() bool {
 	return true
 }
 
-// Generate produces a string.
-func (r Repeater) Generate() string {
-	return string(r)
+// Generate returns the string to repeat (r.Msg).
+func (r Repeater) Generate() (string, error) {
+	return r.Msg, nil
 }

@@ -1,15 +1,37 @@
 # begone
 
-_A fully automatic spamming utility, created for the sole purpose of
+_A fully automatic spamming tool, created for the sole purpose of
 obliterating conversation threads on
 [Facebook Messenger](https://messenger.com)._
 
 ## Usage
 
-### Ready-to-install releases
+### Installing
 
-Grab the [latest release](https://github.com/stevenxie/begone) compiled for
-your system.
+Grab the [latest release](https://github.com/stevenxie/begone/releases) compiled
+for your system.
+
+Ensure that the binary is executable, and place it somewhere in your `$PATH`.
+For macOS users, this might look something like this:
+
+```bash
+$ mv ~/Downloads/begone-darwin-x64 /usr/local/bin/begone
+$ chmod u+x /usr/local/bin/begone
+```
+
+### Running
+
+```bash
+## Save login credentials to ~/.begone.json.
+$ begone login
+
+## Launch an emoji attack on this conversation thread.
+$ begone emoji https://messenger.com/t/exampleid
+```
+
+<br />
+
+## Advanced Usage
 
 ### Making from source
 
