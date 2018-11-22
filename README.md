@@ -54,6 +54,10 @@ $ begone login
 $ begone emojify
 Enter the target conversation URL (https://messenger.com/t/...):
 https://messenger.com/t/exampleid
+
+## See all options.
+$ begone help
+$ begone help <command>  # i.e. begone help emojify
 ```
 
 <br />
@@ -78,7 +82,8 @@ $ make install  # (or go install)
 ## TODOs
 
 - [ ] (maybe) Implement attacks using local files (images)?
-- [ ] Create different interaction implementations for Windows (the spinners
+- [ ] Add more emojis to the `Emojifier` generator.
+- [x] Create different interaction implementations for Windows (the spinners
       and attack text look kinda funky).
 
 [grp]: https://goreportcard.com/report/github.com/stevenxie/begone
