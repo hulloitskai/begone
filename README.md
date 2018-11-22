@@ -75,6 +75,9 @@ $ begone help <command>  # i.e. begone help emojify
 $ git clone git@github.com:stevenxie/begone.git
 $ cd begone
 
+## Install module dependencies.
+$ make dl # (or go mod download)
+
 ## Compile and install a version for your machine.
 $ make install  # (or go install)
 ```

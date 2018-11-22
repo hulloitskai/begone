@@ -94,7 +94,7 @@ func Begone(ctx *cli.Context, gen strgen.Generator, convoID string) error {
 	fmt.Println()
 
 	// Begin attack.
-	startText := randAtackText(nil)
+	startText := randAttackText(nil)
 	const endText = "Attack finished."
 	switch runtime.GOOS {
 	case "windows":
@@ -163,7 +163,7 @@ var attackTexts = []string{
 	"Letting it rip...",
 }
 
-func randAtackText(rng *rand.Rand) string {
+func randAttackText(rng *rand.Rand) string {
 	if rng == nil {
 		src := rand.NewSource(time.Now().UnixNano())
 		rng = rand.New(src)
