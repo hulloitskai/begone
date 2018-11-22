@@ -4,12 +4,14 @@ _A fully automatic spamming tool, created for the sole purpose of
 obliterating conversation threads on
 [Facebook Messenger](https://messenger.com)._
 
-[![grp-img]][grp]
+[![Github Release][release-img]][release]
+[![Go Report Card][grp-img]][grp]
 
-It works with individual conversations as well as group threads—a real versatile
+Works with individual conversations as well as group threads—a real versatile
 beast. Uses a modified version of
 [`unixpickle/fbmsgr`](https://github.com/unixpickle/fbmsgr) as the underlying
-Messenger client. And, obviously, written in [Go](https://golang.org).
+Messenger client. And, like all my CLI programs, written in
+[Go](https://golang.org).
 
 <br />
 <p align="center">
@@ -19,6 +21,17 @@ Messenger client. And, obviously, written in [Go](https://golang.org).
 ## Usage
 
 ### Installing
+
+#### Using Homebrew:
+
+If you're on macOS and have [Homebrew](https://brew.sh), you're in luck! Just
+run:
+
+```bash
+brew install stevenxie/tap/begone
+```
+
+#### Manually:
 
 Grab the [latest release](https://github.com/stevenxie/begone/releases) compiled
 for your system.
@@ -34,11 +47,13 @@ $ chmod u+x /usr/local/bin/begone
 ### Running
 
 ```bash
-## Save login credentials to ~/.begone.json.
+## (Optional) save login credentials to ~/.begone.json.
 $ begone login
 
 ## Launch an emoji attack on a conversation thread.
-$ begone emojify https://messenger.com/t/exampleid
+$ begone emojify
+Enter the target conversation URL (https://messenger.com/t/...):
+https://messenger.com/t/exampleid
 ```
 
 <br />
@@ -48,11 +63,13 @@ $ begone emojify https://messenger.com/t/exampleid
 ### Making from source
 
 > This requires the [Go](https://golang.org) language and associated toolchain
-> to be installed. If you're on _macOS_, this may be as easy as `brew install go`!.
+> to be installed. If you're on macOS, this may be as easy as
+> `brew install go`!
 
 ```bash
 ## Clone this repository.
 $ git clone git@github.com:stevenxie/begone.git
+$ cd begone
 
 ## Compile and install a version for your machine.
 $ make install  # (or go install)
@@ -61,6 +78,10 @@ $ make install  # (or go install)
 ## TODOs
 
 - [ ] (maybe) Implement attacks using local files (images)?
+- [ ] Create different interaction implementations for Windows (the spinners
+      and attack text look kinda funky).
 
 [grp]: https://goreportcard.com/report/github.com/stevenxie/begone
 [grp-img]: https://goreportcard.com/badge/github.com/stevenxie/begone
+[release]: https://github.com/stevenxie/begone/releases
+[release-img]: https://img.shields.io/github/release/stevenxie/begone.svg

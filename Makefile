@@ -86,13 +86,13 @@ mod-init:
 	 fi
 
 ## Verifies that Go module dependencies are satisfied.
-VERIFY_CMD = echo "Verifying Go module dependencies..."; go mod verify
+VERIFY_CMD = echo "Verifying Go module dependencies..." && go mod verify
 verify:
 	@$(VERIFY_CMD)
 
 ## Downloads Go module dependencies.
 DL_CMD = echo "Downloading Go module dependencies..." && \
-	go mod download && echo "done"
+           go mod download && echo "done"
 dl:
 	@$(DL_CMD)
 
@@ -126,7 +126,7 @@ fix:
 
 ## Downloads and installs all subpackages (legacy).
 GET_CMD = echo "Installing dependencies... " && \
-	go get ./... && echo "done"
+          go get ./... && echo "done"
 get:
 	@$(GET_CMD)
 
@@ -140,13 +140,14 @@ get:
 ##            source .env.sh)
 SRCENV = true
 OUTPATH = $(OUTDIR)/$(PKG_NAME)
-RUN_CMD = if [ -f ".env.sh" ] && [ "$(SRCENV)" == true ]; then \
-	  echo 'Configuring environment variables by sourcing ".env.sh"...'; \
-	  . .env.sh; \
+RUN_CMD = \
+	if [ -f ".env.sh" ] && [ "$(SRCENV)" == true ]; then \
+	  echo 'Configuring environment variables by sourcing ".env.sh"...' && \
+	  . .env.sh && \
 	  printf "done\n\n"; \
 	fi; \
 	if [ -f "$(OUTPATH)" ]; then \
-	  echo 'Running "$(PKG_NAME)"...'; \
+	  echo 'Running "$(PKG_NAME)"...' && \
 	  ./$(OUTPATH); \
 	else \
 	  echo 'run: could not find program "$(OUTPATH)".' >&2; \
@@ -161,9 +162,10 @@ run:
 ##   - MAINDIR (directory of the main package)
 ##   - BUILDARGS (additional arguments to pass to "go build")
 BUILDARGS =
-BUILD_CMD = echo 'Building "$(PKG_NAME)" for this system...'; \
-	go build -o "$$(echo $(OUTDIR) | tr -s '/')/$(PKG_NAME)" $(BUILDARGS) \
-	  $(MAINDIR) && \
+BUILD_CMD = \
+	echo 'Building "$(PKG_NAME)" for this system...' && \
+	go build -o "$$(echo $(OUTDIR) | tr -s '/')/$(PKG_NAME)" \
+	  $(BUILDARGS) $(MAINDIR) && \
 	echo "done"
 build:
 	@$(BUILD_CMD)
@@ -176,21 +178,23 @@ build:
 build-all:
 	@echo 'Building "$(PKG_NAME)" for all systems:'
 	@for GOOS in darwin linux windows; do \
-		for GOARCH in amd64 386; do \
-		  printf "Building GOOS=$$GOOS GOARCH=$$GOARCH... "; \
-		  OUTNAME="$(PKG_NAME)-$$GOOS-$$GOARCH"; \
-		  if [ $$GOOS == windows ]; then OUTNAME="$$OUTNAME.exe"; fi; \
-		  GOBUILD_OUT="$$(GOOS=$$GOOS GOARCH=$$GOARCH go build \
-		    -o "$$(echo $(OUTDIR) | tr -s '/')/$$OUTNAME" $(BUILDARGS) \
-		    $(MAINDIR) 2>&1)"; \
-		  if [ -n "$$GOBUILD_OUT" ]; then \
-		    printf "\nError during build:\n" >&2; \
-		    echo "$$GOBUILD_OUT" >&2; \
-		    exit 1; \
-		  else printf "\tdone\n"; \
-		  fi; \
-		done; \
-	done
+	   for GOARCH in amd64 386; do \
+	     printf "Building GOOS=$$GOOS GOARCH=$$GOARCH... " && \
+	     OUTNAME="$(PKG_NAME)-$$GOOS-$$GOARCH"; \
+	     if [ $$GOOS == windows ]; then \
+	       OUTNAME="$$OUTNAME.exe"; \
+	     fi; \
+	     GOBUILD_OUT="$$(GOOS=$$GOOS GOARCH=$$GOARCH && \
+	     go build -o "$$(echo $(OUTDIR) | tr -s '/')/$$OUTNAME" $(BUILDARGS) \
+	       $(MAINDIR) 2>&1)"; \
+	     if [ -n "$$GOBUILD_OUT" ]; then \
+	       printf "\nError during build:\n" >&2 && \
+	        echo "$$GOBUILD_OUT" >&2 && \
+	        exit 1; \
+	     else printf "\tdone\n"; \
+	     fi; \
+	   done; \
+	 done
 
 ## Builds (compiles) the program for this system, and runs it.
 ## Sources .env.sh before running, if it exists.
@@ -212,7 +216,8 @@ install:
 .PHONY: fmt lint vet check
 
 ## Formats the source code using "gofmt".
-FMT_CMD = if ! which gofmt > /dev/null; then \
+FMT_CMD = \
+	if ! which gofmt > /dev/null; then \
 	  echo '"gofmt" is required to format source code.'; \
 	else \
 	  echo 'Formatting source code using "gofmt"...' && \
@@ -222,7 +227,8 @@ fmt:
 	@$(FMT_CMD)
 
 ## Lints the source code using "golint".
-LINT_CMD = if ! which golint > /dev/null; then \
+LINT_CMD = \
+	if ! which golint > /dev/null; then \
 	  echo '"golint" is required to lint soure code.' >&2; \
 	else \
 	  echo 'Formatting source code using "golint"...' && \
@@ -233,7 +239,7 @@ lint:
 
 ## Checks for suspicious code using "go vet".
 VET_CMD = echo 'Checking for suspicious code using "go vet"...' && \
-	go vet && echo "done"
+	      go vet && echo "done"
 vet:
 	@$(VET_CMD)
 
@@ -247,8 +253,8 @@ check:
 .PHONY: test test-v test-race test-race-v bench bench-v
 
 TEST_CMD = go test ./... -coverprofile=$(COVER_OUT) \
-		               -covermode=atomic \
-		               -timeout=$(TEST_TIMEOUT)
+                         -covermode=atomic \
+                         -timeout=$(TEST_TIMEOUT)
 test:
 	@echo "Testing:"
 	@$(TEST_CMD)
