@@ -45,6 +45,14 @@ var GlobalFlags = []cli.Flag{
 //
 // Uses cli flags "cycles", "delay"
 func Begone(ctx *cli.Context, gen strgen.Generator, convoID string) error {
+	// Get conversation ID.
+	var err error
+	if convoID == "" {
+		if convoID, err = queryConvoID(); err != nil {
+			return ess.AddCtx("cmd: requesting conversation ID", err)
+		}
+	}
+
 	// Read config.
 	cfg, err := config.Load()
 	if err != nil {
@@ -52,13 +60,6 @@ func Begone(ctx *cli.Context, gen strgen.Generator, convoID string) error {
 	}
 	if err = queryMissing(cfg); err != nil {
 		return ess.AddCtx("cmd: requesting missing config values", err)
-	}
-
-	// Get conversation ID.
-	if convoID == "" {
-		if convoID, err = queryConvoID(); err != nil {
-			return ess.AddCtx("cmd: requesting conversation ID", err)
-		}
 	}
 
 	// Derive bot configuration, create bot.
