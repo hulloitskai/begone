@@ -1,6 +1,6 @@
 package strgen
 
-// Repeater is a Generator that simply returns the same string every time.
+// Repeater is an mbot.StringGenerator that returns the same string every time.
 type Repeater struct {
 	Msg string
 }

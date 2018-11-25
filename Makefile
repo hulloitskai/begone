@@ -4,6 +4,8 @@ ifeq ($(shell ls -1 go.mod 2> /dev/null),go.mod) # use module name from go.mod, 
 	PKG_NAME = $(shell basename "$$(cat go.mod | grep module | awk '{print $$2}')")
 endif
 
+VERSION = $(shell git describe --tags | cut -c 2-)
+
 ## Directory of the 'main' package.
 MAINDIR = "."
 ## Output directory to place artifacts from 'build' and 'build-all'.
@@ -15,6 +17,9 @@ MODULES = true
 GORELEASER = true
 ## Enable git-secret for this project.
 SECRETS = false
+
+## Custom Go linker flags:
+LDFLAGS = -X github.com/stevenxie/begone/cmd.Version=$(VERSION)
 
 
 ## Source configs:
@@ -164,7 +169,9 @@ run:
 BUILDARGS =
 BUILD_CMD = \
 	echo 'Building "$(PKG_NAME)" for this system...' && \
-	go build -o "$$(echo $(OUTDIR) | tr -s '/')/$(PKG_NAME)" \
+	go build \
+	  -o "$$(echo $(OUTDIR) | tr -s '/')/$(PKG_NAME)" \
+	  -ldflags "$(LDFLAGS)" \
 	  $(BUILDARGS) $(MAINDIR) && \
 	echo "done"
 build:
@@ -185,8 +192,10 @@ build-all:
 	       OUTNAME="$$OUTNAME.exe"; \
 	     fi; \
 	     GOBUILD_OUT="$$(GOOS=$$GOOS GOARCH=$$GOARCH && \
-	     go build -o "$$(echo $(OUTDIR) | tr -s '/')/$$OUTNAME" $(BUILDARGS) \
-	       $(MAINDIR) 2>&1)"; \
+	       go build \
+	         -o "$$(echo $(OUTDIR) | tr -s '/')/$$OUTNAME" \
+	         -ldflags "$(LDFLAGS)" \
+	         $(BUILDARGS) $(MAINDIR) 2>&1)"; \
 	     if [ -n "$$GOBUILD_OUT" ]; then \
 	       printf "\nError during build:\n" >&2 && \
 	        echo "$$GOBUILD_OUT" >&2 && \
@@ -308,6 +317,10 @@ goreleaser-init:
 
 release:
 	@echo "Releasing with 'goreleaser'..." && goreleaser --rm-dist
+
+snapshot:
+	@echo "Making snapshot with 'goreleaser'..." && \
+	   goreleaser --snapshot --rm-dist
 
 
 ## [Custom Environments]

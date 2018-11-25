@@ -42,6 +42,9 @@ Thumbs.db
 #!.vscode/launch.json
 !.vscode/extensions.json
 
+## IntelliJ
+.idea/
+
 
 ## [Miscellaneous]
 ## git-secret:

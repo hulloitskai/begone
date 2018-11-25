@@ -10,7 +10,7 @@ import (
 	ess "github.com/unixpickle/essentials"
 )
 
-// Emojifier is a Generator that produces emojis.
+// Emojifier is an mbot.StringGenerator that produces emojis.
 type Emojifier struct {
 	Mode string // defines how emojis are generated
 
