@@ -15,12 +15,12 @@ builds:
       - linux
 
     ldflags:
-      - "-X github.com/stevenxie/begone/cmd.Version={{ .Version }}"
+      - "-X github.com/stevenxie/begone/cmd.Version={{.Version}}"
 
 
 ## Create an archive with built binaries and the README, license, etc.
 archive:
-  name_template: "{{ .ProjectName }}-{{ .Version }}-{{ .Os }}-{{ .Arch}}"
+  name_template: "{{.ProjectName}}-{{.Version}}-{{.Os}}-{{.Arch}}"
   wrap_in_directory: true
 
   replacements:
@@ -55,11 +55,11 @@ changelog:
 
 ## Create a project snapshot without releasing.
 snapshot:
-  name_template: "{{ .ShortCommit }}-SNAPSHOT"
+  name_template: "{{.ShortCommit}}-SNAPSHOT"
 
 ## Release to Github Releases.
 release:
-  name_template: "{{ .ProjectName }}-{{ .Tag }}"
+  name_template: "{{.ProjectName}}-{{.Tag}}"
 
 ## Release to Homebrew.
 brew:
@@ -70,7 +70,7 @@ brew:
   ## Custom install / test scripts:
   install: |
     bin.install "begone"
-    bash_completion.install "autocomplete/begone"
+    bash_completion.install "autocomplete/begone-completion.sh"
 
   test: begone --version
 

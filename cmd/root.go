@@ -30,6 +30,7 @@ func initRootCmd() {
 	rootCmd.AddCommand(repeatCmd)
 	rootCmd.AddCommand(imageCmd)
 	rootCmd.AddCommand(fileCmd)
+	rootCmd.AddCommand(completionCmd)
 }
 
 var (

@@ -9,7 +9,8 @@ import (
 )
 
 func initEmojifyCmd() {
-	emojifyCmd.LocalFlags().StringP("mode", "m", "single",
+	flags := emojifyCmd.LocalFlags()
+	flags.StringP("mode", "m", "single",
 		"emoji generation method ('single', 'staircase', 'unique')")
 }
 
