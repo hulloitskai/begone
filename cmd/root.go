@@ -1,6 +1,7 @@
 package cmd
 
 import (
+	"fmt"
 	"os"
 
 	"github.com/spf13/cobra"
@@ -24,6 +25,9 @@ func initRootCmd() {
 		"maximum consecutive send fails before aborting")
 	set.IntP("cycles", "c", -1, "number of spam cycles (-1 for unlimited)")
 
+	// Configure local flags.
+	rootCmd.Flags().BoolP("version", "v", false, "show the version string")
+
 	// Add subcommands.
 	rootCmd.AddCommand(loginCmd)
 	rootCmd.AddCommand(emojifyCmd)
@@ -46,8 +50,23 @@ var (
 		Long:         "Begone is a fully automatic spamming tool for FB Messenger.",
 		Version:      Version,
 		SilenceUsage: true,
+		RunE:         begone,
 	}
 )
+
+func begone(cmd *cobra.Command, _ []string) error {
+	showVersion, err := cmd.Flags().GetBool("version")
+	if err != nil {
+		return err
+	}
+
+	if showVersion {
+		fmt.Printf("begone version %s", cmd.Version)
+		return nil
+	}
+
+	return cmd.Help()
+}
 
 // Execute runs the root program command.
 func Execute() {
