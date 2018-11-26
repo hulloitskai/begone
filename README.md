@@ -31,6 +31,9 @@ run:
 brew install stevenxie/tap/begone
 ```
 
+This will install `begone` from the Homebrew tap
+[`stevenxie/tap`](https://github.com/stevenxie/homebrew-tap).
+
 #### Manually:
 
 Grab the [latest release](https://github.com/stevenxie/begone/releases) compiled
