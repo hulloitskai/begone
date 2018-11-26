@@ -13,7 +13,8 @@ import (
 )
 
 var imageCmd = &cobra.Command{
-	Use:   "image [flags]\n  begone image [flags] FILEPATH [CONVERSATION ID]",
+	Use: "image [flags] FILEPATH\n  begone image [flags] FILEPATH " +
+		"[CONVERSATION ID]",
 	Short: "Spam a target with an image",
 	Long:  "Image spams a target with an image file.",
 	Args:  withUsage(cobra.RangeArgs(1, 2)),

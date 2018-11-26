@@ -9,7 +9,7 @@ import (
 )
 
 func initEmojifyCmd() {
-	flags := emojifyCmd.LocalFlags()
+	flags := emojifyCmd.Flags()
 	flags.StringP("mode", "m", "single",
 		"emoji generation method ('single', 'staircase', 'unique')")
 }
@@ -23,7 +23,7 @@ var emojifyCmd = &cobra.Command{
 }
 
 func emojify(cmd *cobra.Command, args []string) error {
-	mode, err := cmd.LocalFlags().GetString("mode")
+	mode, err := cmd.Flags().GetString("mode")
 	if err != nil {
 		return err
 	}

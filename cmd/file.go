@@ -9,7 +9,8 @@ import (
 )
 
 var fileCmd = &cobra.Command{
-	Use:   "file [flags]\n  begone file [flags] FILEPATH [CONVERSATION ID]",
+	Use: "file [flags] FILEPATH\n  begone file [flags] FILEPATH " +
+		"[CONVERSATION ID]",
 	Short: "Send a text file line-by-line to a target",
 	Long:  "File sends text from a file, line-by-line, to a target.",
 	Args:  withUsage(cobra.RangeArgs(1, 2)),

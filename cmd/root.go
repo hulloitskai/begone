@@ -21,7 +21,7 @@ func initRootCmd() {
 	set := rootCmd.PersistentFlags()
 	set.IntP("delay", "d", 225, "delay (in ms) between each message")
 	set.IntP("send-fail-delay", "D", 1000, "delay (in ms) after a send fail")
-	set.IntP("max-send-fails", "f", 1000,
+	set.IntP("max-send-fails", "f", 3,
 		"maximum consecutive send fails before aborting")
 	set.IntP("cycles", "c", -1, "number of spam cycles (-1 for unlimited)")
 
