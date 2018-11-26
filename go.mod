@@ -11,7 +11,6 @@ require (
 	github.com/spf13/pflag v1.0.3
 	github.com/stevenxie/fbmsgr v0.0.0-20181121182201-27295a7d4801
 	github.com/unixpickle/essentials v0.0.0-20180916162721-ae02bc395f1d
-	github.com/urfave/cli v1.20.0
 	golang.org/x/crypto v0.0.0-20181112202954-3d3f9f413869 // indirect
 	golang.org/x/sys v0.0.0-20181122145206-62eef0e2fa9b // indirect
 )

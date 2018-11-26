@@ -18,9 +18,15 @@ Messenger client. And, like all my CLI programs, written in
   <img src="./.github/demo.gif" width=600>
 </p>
 
+## Features
+* `begone emojify` – send streams of emojis, en masse
+* `begone repeat` – keep repeating a message
+* `begone file` – read a file line-by-line to someone
+* `begone image` – continually send an image
+
 ## Usage
 
-### Installing
+### Installation
 
 #### Using Homebrew:
 
@@ -87,8 +93,8 @@ $ make install  # (or go install)
 
 ## TODOs
 
-- [ ] (maybe) Implement attacks using local files (images)?
-- [ ] Add more emojis to the `Emojifier` generator.
+- [x] (maybe) Implement attacks using local files (images)?
+- [x] Add more emojis to the `Emojifier` generator.
 - [x] Create different interaction implementations for Windows (the spinners
       and attack text look kinda funky).
 
