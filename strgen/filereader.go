@@ -4,6 +4,7 @@ import (
 	"bufio"
 	"errors"
 	"os"
+	"strings"
 
 	ess "github.com/unixpickle/essentials"
 )
@@ -54,12 +55,15 @@ func (fr *FileReader) HasMore() bool {
 		return true
 	}
 
-	if !fr.Scanner.Scan() { // scan did not advance to next token
-		if err := fr.File.Close(); err != nil {
-			panic(err)
+	var text string
+	for text == "" {
+		if !fr.Scanner.Scan() { // scan did not advance to next token
+			if err := fr.File.Close(); err != nil {
+				panic(err)
+			}
+			return fr.Scanner.Err() != nil
 		}
-
-		return fr.Scanner.Err() != nil
+		text = strings.TrimSpace(fr.Scanner.Text())
 	}
 
 	return true

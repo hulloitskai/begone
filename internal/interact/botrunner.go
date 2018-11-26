@@ -1,9 +1,7 @@
 package interact
 
 import (
-	"log"
 	"math/rand"
-	"os"
 	"time"
 
 	"github.com/stevenxie/begone/internal/config"
@@ -65,7 +63,6 @@ func (br *BotRunner) Configure(bcfg *mbot.Config) error {
 	bcfg.Username = cfg.Username
 	bcfg.Password = cfg.Password
 
-	logger := log.New(os.Stderr, "", 0)
-	br.Bot, err = bcfg.BuildWith(logger)
+	br.Bot, err = bcfg.Build()
 	return err
 }
