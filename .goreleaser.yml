@@ -70,7 +70,8 @@ brew:
   ## Custom install / test scripts:
   install: |
     bin.install "begone"
-    bash_completion.install "autocomplete/begone-completion.sh"
+    bash_completion.install "autocomplete/bash/begone"
+    zsh_completion.install "autocomplete/zsh/begone"
 
   test: begone --version
 

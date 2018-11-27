@@ -1,0 +1,3 @@
+#!/usr/bin/env zsh
+
+. <(begone --completion-script-bash)
