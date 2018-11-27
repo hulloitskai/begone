@@ -1,8 +1,12 @@
 package main
 
-import "github.com/stevenxie/begone/cmd"
+import (
+	"os"
+
+	"github.com/stevenxie/begone/cmd"
+)
 
 func main() {
-	// Execute root command.
-	cmd.Execute()
+	// Execute root command, with args that exclude the caller name.
+	cmd.Exec(os.Args[1:])
 }

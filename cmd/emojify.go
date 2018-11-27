@@ -1,59 +1,55 @@
 package cmd
 
 import (
-	"github.com/spf13/cobra"
-	"github.com/stevenxie/begone/internal/interact"
 	"github.com/stevenxie/begone/mbot"
 	"github.com/stevenxie/begone/strgen"
 	ess "github.com/unixpickle/essentials"
+	"gopkg.in/alecthomas/kingpin.v2"
 )
 
-func initEmojifyCmd() {
-	flags := emojifyCmd.Flags()
-	flags.StringP("mode", "m", "single",
-		"emoji generation method ('single', 'staircase', 'unique')")
+func registerEmojifyCmd(app *kingpin.Application) {
+	emojifyCmd = app.Command(
+		"emojify",
+		"Spam a target using an emoji generator.",
+	).Alias("emoji")
+
+	// Args:
+	emojifyOpts.ConvoID = emojifyCmd.Arg(
+		"conversation ID",
+		"The target conversation ID (last portion of a www.messenger.com link).",
+	).Default("").String()
+
+	// Flags:
+	emojifyOpts.Mode = emojifyCmd.Flag(
+		"mode",
+		"Emoji generation method (single, staircase, or unique).").Short('m').
+		Default("single").Enum("single", "staircase", "unique")
 }
 
-var emojifyCmd = &cobra.Command{
-	Use:   "emojify [flags]\n  begone emojify [flags] [CONVERSATION ID]",
-	Short: "Spam a target using an emoji generator",
-	Long:  "Emojify spams a target using an emoji generator.",
-	Args:  withUsage(cobra.MaximumNArgs(1)),
-	RunE:  emojify,
-}
+var (
+	emojifyCmd *kingpin.CmdClause
 
-func emojify(cmd *cobra.Command, args []string) error {
-	mode, err := cmd.Flags().GetString("mode")
-	if err != nil {
-		return err
+	emojifyOpts struct {
+		ConvoID, Mode *string
 	}
+)
 
+func emojify() error {
 	// Create generator.
-	gen, err := strgen.NewEmojifier(mode)
+	gen, err := strgen.NewEmojifier(*emojifyOpts.Mode)
 	if err != nil {
 		return ess.AddCtx("creating emojifier", err)
 	}
 
-	// Derive Bot config.
-	bcfg, err := deriveBotConfig(cmd.Flags())
-	if err != nil {
-		return ess.AddCtx("deriving bot config", err)
-	}
-
 	// Derive convoURL.
-	var (
-		convoID string
-		runner  = interact.NewBotRunner()
-	)
-	if len(args) > 0 {
-		convoID = args[0]
-	}
-	convoURL, err := deriveConvoURL(convoID, runner.Prompter)
+	runner := deriveBotRunner(nil)
+	convoURL, err := deriveConvoURL(*emojifyOpts.ConvoID, runner.Prompter)
 	if err != nil {
 		return err
 	}
 
 	// Configure and run BotRunner.
+	bcfg := deriveBotConfig()
 	if err = runner.Configure(bcfg); err != nil {
 		return ess.AddCtx("configuring BotRunner", err)
 	}

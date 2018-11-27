@@ -1,53 +1,53 @@
 package cmd
 
 import (
-	"github.com/spf13/cobra"
-	"github.com/stevenxie/begone/internal/interact"
 	"github.com/stevenxie/begone/mbot"
 	"github.com/stevenxie/begone/strgen"
 	ess "github.com/unixpickle/essentials"
+	"gopkg.in/alecthomas/kingpin.v2"
 )
 
-var fileCmd = &cobra.Command{
-	Use: "file [flags] FILEPATH\n  begone file [flags] FILEPATH " +
-		"[CONVERSATION ID]",
-	Short: "Send a text file line-by-line to a target",
-	Long:  "File sends text from a file, line-by-line, to a target.",
-	Args:  withUsage(cobra.RangeArgs(1, 2)),
-	RunE:  fileReader,
-}
-
-func fileReader(cmd *cobra.Command, args []string) error {
-	// Parse arguments.
-	var (
-		fpath, convoID string
-		p              = interact.NewPrompter()
+func registerFileCmd(app *kingpin.Application) {
+	fileCmd = app.Command(
+		"file", "Send a text file line-by-line to a target.",
 	)
 
-	fpath = args[0]
-	if len(args) > 1 {
-		convoID = args[1]
-	}
+	// Args:
+	fileOpts.Path = fileCmd.Arg(
+		"filepath",
+		"The path to the text file to be read.",
+	).Required().String()
 
-	gen, err := strgen.NewFileReader(fpath)
+	fileOpts.ConvoID = fileCmd.Arg(
+		"conversation ID",
+		"The target conversation ID (last portion of a www.messenger.com link).",
+	).Default("").String()
+}
+
+var (
+	fileCmd *kingpin.CmdClause
+
+	fileOpts struct {
+		Path, ConvoID *string
+	}
+)
+
+func file() error {
+	// Create generator.
+	gen, err := strgen.NewFileReader(*fileOpts.Path)
 	if err != nil {
 		return ess.AddCtx("creating FileReader", err)
 	}
 
-	// Derive Bot config.
-	bcfg, err := deriveBotConfig(cmd.Flags())
-	if err != nil {
-		return ess.AddCtx("deriving bot config", err)
-	}
-
 	// Derive convoURL.
-	convoURL, err := deriveConvoURL(convoID, p)
+	runner := deriveBotRunner(nil)
+	convoURL, err := deriveConvoURL(*fileOpts.ConvoID, runner.Prompter)
 	if err != nil {
 		return err
 	}
 
 	// Configure and run BotRunner.
-	runner := interact.NewBotRunnerWith(p)
+	bcfg := deriveBotConfig()
 	if err = runner.Configure(bcfg); err != nil {
 		return ess.AddCtx("configuring BotRunner", err)
 	}

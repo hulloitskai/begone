@@ -2,32 +2,34 @@ package cmd
 
 import (
 	"fmt"
-	"os"
 
-	"github.com/spf13/cobra"
-	"github.com/spf13/pflag"
+	"github.com/stevenxie/begone/internal/interact"
 	inter "github.com/stevenxie/begone/internal/interact"
 	"github.com/stevenxie/begone/mbot"
 	"github.com/stevenxie/fbmsgr"
 	ess "github.com/unixpickle/essentials"
 )
 
-// deriveBotConfig creates an mbot.Config from flags. It does not fill out the
-// Username or Password fields in the Config.
-func deriveBotConfig(flags *pflag.FlagSet) (*mbot.Config, error) {
-	var (
-		mcfg = mbot.NewConfig()
-		err  error
-	)
+// deriveBotConfig creates an mbot.Config from global app opts. It does not
+// fill out the Username or Password fields in the Config.
+func deriveBotConfig() *mbot.Config {
+	mcfg := mbot.NewConfig()
 
-	if mcfg.Cycles, err = flags.GetInt("cycles"); err != nil {
-		return nil, err
+	if opts.Cycles != nil {
+		mcfg.Cycles = *opts.Cycles
 	}
-	if mcfg.Delay, err = flags.GetInt("delay"); err != nil {
-		return nil, err
+	if opts.Delay != nil {
+		mcfg.Delay = *opts.Delay
 	}
 
-	return mcfg, nil
+	return mcfg
+}
+
+// deriveBotRunner creates an interact.BotRunner from global app opts.
+func deriveBotRunner(p *interact.Prompter) *interact.BotRunner {
+	runner := interact.NewBotRunnerWith(p)
+	runner.Debug = *opts.Debug
+	return runner
 }
 
 // deriveConvoURL derives a convoURL using id and p.
@@ -42,17 +44,4 @@ func deriveConvoURL(id string, p *inter.Prompter) (convoURL string, err error) {
 		return "", ess.AddCtx("querying for conversation URL", err)
 	}
 	return convoURL, nil
-}
-
-func withUsage(pa cobra.PositionalArgs) cobra.PositionalArgs {
-	return func(cmd *cobra.Command, args []string) error {
-		if err := pa(cmd, args); err != nil {
-			fmt.Fprintf(os.Stderr, "Error: %v\n\n", err)
-			if err := cmd.Usage(); err != nil {
-				ess.Die(err)
-			}
-			os.Exit(1)
-		}
-		return nil
-	}
 }

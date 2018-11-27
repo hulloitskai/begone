@@ -4,60 +4,61 @@ import (
 	"bufio"
 	"os"
 
-	"github.com/spf13/cobra"
+	"gopkg.in/alecthomas/kingpin.v2"
+
 	"github.com/stevenxie/begone/internal/interact"
 	"github.com/stevenxie/begone/mbot"
 	"github.com/stevenxie/begone/strgen"
 	ess "github.com/unixpickle/essentials"
 )
 
-var repeatCmd = &cobra.Command{
-	Use:   "repeat [flags]\n  begone repeat [flags] [MESSAGE] [CONVERSATION ID]",
-	Short: "Spam a target with a message",
-	Long:  "Repeat spams a target with a message.",
-	Args:  withUsage(cobra.MaximumNArgs(2)),
-	RunE:  repeat,
+func registerRepeatCmd(app *kingpin.Application) {
+	repeatCmd = app.Command("repeat", "Spam a target with a message.")
+
+	// Args:
+	repeatOpts.Msg = repeatCmd.Arg("message", "The message to send repeatedly.").
+		String()
+
+	repeatOpts.ConvoID = repeatCmd.Arg(
+		"conversation ID",
+		"The target conversation ID (last portion of a www.messenger.com link).",
+	).Default("").String()
 }
 
-func repeat(cmd *cobra.Command, args []string) error {
-	// Parse arguments.
-	var (
-		msg, convoID string
-		p            = interact.NewPrompter()
-	)
-	switch len(args) {
-	case 2:
-		convoID = args[1]
-		fallthrough
-	case 1:
-		msg = args[0]
+var (
+	repeatCmd *kingpin.CmdClause
+
+	repeatOpts struct {
+		Msg, ConvoID *string
 	}
+)
+
+func repeat() error {
+	// Parse arguments.
+	p := interact.NewPrompter()
 
 	// Validate arguments.
-	if msg == "" {
+	if repeatOpts.Msg == nil {
 		var err error
-		if msg, err = queryRepeatMessage(p); err != nil {
+		if *repeatOpts.Msg, err = queryRepeatMessage(p); err != nil {
 			return ess.AddCtx("querying for message", err)
 		}
 	}
 
 	// Create generator.
-	gen := strgen.NewRepeater(msg)
-
-	// Derive Bot config.
-	bcfg, err := deriveBotConfig(cmd.Flags())
-	if err != nil {
-		return ess.AddCtx("deriving bot config", err)
-	}
+	gen := strgen.NewRepeater(*repeatOpts.Msg)
 
 	// Derive convoURL.
-	convoURL, err := deriveConvoURL(convoID, p)
+	convoURL, err := deriveConvoURL(*repeatOpts.ConvoID, p)
 	if err != nil {
 		return err
 	}
 
 	// Configure and run BotRunner.
-	runner := interact.NewBotRunnerWith(p)
+	var (
+		bcfg   = deriveBotConfig()
+		runner = deriveBotRunner(p)
+	)
 	if err = runner.Configure(bcfg); err != nil {
 		return ess.AddCtx("configuring BotRunner", err)
 	}

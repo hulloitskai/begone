@@ -1,0 +1,3 @@
+#!/usr/bin/env bash
+
+. <(begone --completion-script-bash)
