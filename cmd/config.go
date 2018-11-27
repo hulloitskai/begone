@@ -7,7 +7,6 @@ func init() {
 	app.VersionFlag.Short('v')
 
 	// Register all the things.
-	registerAppFlags(app)
 	registerLoginCmd(app)
 
 	registerEmojifyCmd(app)

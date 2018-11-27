@@ -13,37 +13,32 @@ func registerEmojifyCmd(app *kingpin.Application) {
 		"Spam a target using an emoji generator.",
 	).Alias("emoji")
 
-	// Args:
-	emojifyOpts.ConvoID = emojifyCmd.Arg(
-		"conversation ID",
-		"The target conversation ID (last portion of a www.messenger.com link).",
-	).Default("").String()
-
 	// Flags:
-	emojifyOpts.Mode = emojifyCmd.Flag(
+	emojifyCmd.Flag(
 		"mode",
-		"Emoji generation method (single, staircase, or unique).").Short('m').
-		Default("single").Enum("single", "staircase", "unique")
+		"Emoji generation method (single, staircase, or unique).",
+	).Short('m').Default("single").
+		EnumVar(&emojifyMode, "single", "staircase", "unique")
+
+	// Common options:
+	registerCommonOpts(emojifyCmd)
 }
 
 var (
-	emojifyCmd *kingpin.CmdClause
-
-	emojifyOpts struct {
-		ConvoID, Mode *string
-	}
+	emojifyCmd  *kingpin.CmdClause
+	emojifyMode string
 )
 
 func emojify() error {
 	// Create generator.
-	gen, err := strgen.NewEmojifier(*emojifyOpts.Mode)
+	gen, err := strgen.NewEmojifier(emojifyMode)
 	if err != nil {
 		return ess.AddCtx("creating emojifier", err)
 	}
 
 	// Derive convoURL.
 	runner := deriveBotRunner(nil)
-	convoURL, err := deriveConvoURL(*emojifyOpts.ConvoID, runner.Prompter)
+	convoURL, err := deriveConvoURL(copts.ConvoID, runner.Prompter)
 	if err != nil {
 		return err
 	}

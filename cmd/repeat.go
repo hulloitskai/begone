@@ -16,21 +16,16 @@ func registerRepeatCmd(app *kingpin.Application) {
 	repeatCmd = app.Command("repeat", "Spam a target with a message.")
 
 	// Args:
-	repeatOpts.Msg = repeatCmd.Arg("message", "The message to send repeatedly.").
-		String()
+	repeatCmd.Arg("message", "The message to send repeatedly.").
+		StringVar(&repeatMsg)
 
-	repeatOpts.ConvoID = repeatCmd.Arg(
-		"conversation ID",
-		"The target conversation ID (last portion of a www.messenger.com link).",
-	).Default("").String()
+	// Common options:
+	registerCommonOpts(repeatCmd)
 }
 
 var (
 	repeatCmd *kingpin.CmdClause
-
-	repeatOpts struct {
-		Msg, ConvoID *string
-	}
+	repeatMsg string
 )
 
 func repeat() error {
@@ -38,18 +33,18 @@ func repeat() error {
 	p := interact.NewPrompter()
 
 	// Validate arguments.
-	if repeatOpts.Msg == nil {
+	if repeatMsg == "" {
 		var err error
-		if *repeatOpts.Msg, err = queryRepeatMessage(p); err != nil {
+		if repeatMsg, err = queryRepeatMessage(p); err != nil {
 			return ess.AddCtx("querying for message", err)
 		}
 	}
 
 	// Create generator.
-	gen := strgen.NewRepeater(*repeatOpts.Msg)
+	gen := strgen.NewRepeater(repeatMsg)
 
 	// Derive convoURL.
-	convoURL, err := deriveConvoURL(*repeatOpts.ConvoID, p)
+	convoURL, err := deriveConvoURL(copts.ConvoID, p)
 	if err != nil {
 		return err
 	}

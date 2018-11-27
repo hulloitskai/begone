@@ -18,10 +18,10 @@ func registerLoginCmd(app *kingpin.Application) {
 
 	// Register flags.
 	loginOpts.UserOnly = loginCmd.Flag("user-only", "Only save the username.").
-		Short('u').Default("false").Bool()
+		Short('u').Bool()
 
 	loginOpts.Clear = loginCmd.Flag("clear", "Remove saved login credentials.").
-		Short('U').Default("false").Bool()
+		Short('U').Bool()
 }
 
 var (

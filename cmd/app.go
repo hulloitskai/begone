@@ -23,26 +23,6 @@ var (
 	).Version(Version)
 )
 
-func registerAppFlags(app *kingpin.Application) {
-	opts.Debug = app.Flag("debug", "Enable debug mode.").Default("false").Bool()
-
-	opts.Delay = app.Flag("delay", "Delay (in ms) between messages.").
-		Short('d').Default("225").Int()
-	opts.Cycles = app.Flag("cycles", "Number of spam cycles (-1 for infinite).").
-		Short('c').Default("-1").Int()
-
-	opts.SendFailDelay = app.Flag("send-fail-delay",
-		"Delay (in ms) after a send fail.").Short('D').Default("1000").Int()
-	opts.MaxSendFails = app.Flag("max-send-fails",
-		"Max consecutive send fails before aborting.").Short('f').Default("3").Int()
-}
-
-var opts struct {
-	Debug                       *bool
-	Delay, Cycles               *int
-	SendFailDelay, MaxSendFails *int
-}
-
 // Exec runs the root command. It is the application entrypoint.
 func Exec(args []string) {
 	var err error

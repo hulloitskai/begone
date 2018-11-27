@@ -14,21 +14,15 @@ import (
 // fill out the Username or Password fields in the Config.
 func deriveBotConfig() *mbot.Config {
 	mcfg := mbot.NewConfig()
-
-	if opts.Cycles != nil {
-		mcfg.Cycles = *opts.Cycles
-	}
-	if opts.Delay != nil {
-		mcfg.Delay = *opts.Delay
-	}
-
+	mcfg.Cycles = copts.Cycles
+	mcfg.Delay = copts.Delay
 	return mcfg
 }
 
 // deriveBotRunner creates an interact.BotRunner from global app opts.
 func deriveBotRunner(p *interact.Prompter) *interact.BotRunner {
 	runner := interact.NewBotRunnerWith(p)
-	runner.Debug = *opts.Debug
+	runner.Debug = copts.Debug
 	return runner
 }
 

@@ -16,45 +16,39 @@ func registerImageCmd(app *kingpin.Application) {
 	imageCmd = app.Command("image", "Spam a target with an image file.")
 
 	// Args:
-	imageOpts.Path = imageCmd.Arg("filepath", "Path to the image file to send.").
-		Required().String()
+	imageCmd.Arg("filepath", "Path to the image file to send.").
+		Required().StringVar(&imagePath)
 
-	imageOpts.ConvoID = imageCmd.Arg(
-		"conversation ID",
-		"The target conversation ID (last portion of a www.messenger.com link).",
-	).Default("").String()
+	// Common options:
+	registerCommonOpts(imageCmd)
 }
 
 var (
-	imageCmd *kingpin.CmdClause
-
-	imageOpts struct {
-		Path, ConvoID *string
-	}
+	imageCmd  *kingpin.CmdClause
+	imagePath string
 )
 
 func image() error {
 	// Validate file.
-	info, err := os.Stat(*imageOpts.Path)
+	info, err := os.Stat(imagePath)
 	if err != nil {
 		return err
 	}
 
 	if info.IsDir() {
 		return fmt.Errorf("path '%s' refers to directory, not an image file",
-			*imageOpts.Path)
+			imagePath)
 	}
 
-	switch str.ToLower(filepath.Ext(*imageOpts.Path)) {
+	switch str.ToLower(filepath.Ext(imagePath)) {
 	case ".jpeg", ".jpg", ".png", ".gif":
 	default:
-		return fmt.Errorf("file '%s' is not an image",
-			filepath.Base(*imageOpts.Path))
+		return fmt.Errorf("file '%s' is not an image", filepath.Base(imagePath))
 	}
 
 	// Derive convoURL.
 	runner := deriveBotRunner(nil)
-	convoURL, err := deriveConvoURL(*imageOpts.ConvoID, runner.Prompter)
+	convoURL, err := deriveConvoURL(copts.ConvoID, runner.Prompter)
 	if err != nil {
 		return err
 	}
@@ -65,6 +59,6 @@ func image() error {
 		return ess.AddCtx("configuring BotRunner", err)
 	}
 	return runner.Run(func(bot *mbot.Bot) error {
-		return bot.CycleImage(convoURL, *imageOpts.ConvoID)
+		return bot.CycleImage(convoURL, copts.ConvoID)
 	})
 }

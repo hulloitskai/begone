@@ -13,35 +13,28 @@ func registerFileCmd(app *kingpin.Application) {
 	)
 
 	// Args:
-	fileOpts.Path = fileCmd.Arg(
-		"filepath",
-		"The path to the text file to be read.",
-	).Required().String()
+	fileCmd.Arg("filepath", "The path to the text file to be read.").Required().
+		HintOptions(" ").StringVar(&filePath)
 
-	fileOpts.ConvoID = fileCmd.Arg(
-		"conversation ID",
-		"The target conversation ID (last portion of a www.messenger.com link).",
-	).Default("").String()
+	// Common options:
+	registerCommonOpts(fileCmd)
 }
 
 var (
-	fileCmd *kingpin.CmdClause
-
-	fileOpts struct {
-		Path, ConvoID *string
-	}
+	fileCmd  *kingpin.CmdClause
+	filePath string
 )
 
 func file() error {
 	// Create generator.
-	gen, err := strgen.NewFileReader(*fileOpts.Path)
+	gen, err := strgen.NewFileReader(filePath)
 	if err != nil {
 		return ess.AddCtx("creating FileReader", err)
 	}
 
 	// Derive convoURL.
 	runner := deriveBotRunner(nil)
-	convoURL, err := deriveConvoURL(*fileOpts.ConvoID, runner.Prompter)
+	convoURL, err := deriveConvoURL(copts.ConvoID, runner.Prompter)
 	if err != nil {
 		return err
 	}
