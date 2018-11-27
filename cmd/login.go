@@ -3,50 +3,45 @@ package cmd
 import (
 	"fmt"
 
-	"github.com/spf13/cobra"
+	"gopkg.in/alecthomas/kingpin.v2"
+
 	"github.com/stevenxie/begone/internal/config"
 	"github.com/stevenxie/begone/internal/interact"
 	ess "github.com/unixpickle/essentials"
 )
 
-func initLoginCmd() {
-	// Configure flags:
-	loginCmd.LocalFlags().BoolP("user-only", "u", false,
-		"only save username; password will be requested every time")
+func registerLoginCmd(app *kingpin.Application) {
+	loginCmd = app.Command(
+		"login",
+		"Save FB Messenger login credentials (obfuscates password).",
+	)
 
-	// Add clearLoginCmd as a subcommand under loginCmd.
-	loginCmd.AddCommand(clearLoginCmd)
+	// Register flags.
+	loginOpts.UserOnly = loginCmd.Flag("user-only", "Only save the username.").
+		Short('u').Default("false").Bool()
+
+	loginOpts.Clear = loginCmd.Flag("clear", "Remove saved login credentials.").
+		Short('U').Default("false").Bool()
 }
 
 var (
-	loginCmd = &cobra.Command{
-		Use:   "login",
-		Short: "Save FB Messenger login credentials",
-		Long: "Save FB Messenger login credentials into a JSON file. \nThe " +
-			"password will be obfuscated to prevent accidental exposure.",
-		Args: withUsage(cobra.NoArgs),
-		RunE: login,
-	}
+	loginCmd *kingpin.CmdClause
 
-	clearLoginCmd = &cobra.Command{
-		Use:   "clear",
-		Short: "remove saved login credentials",
-		Args:  withUsage(cobra.NoArgs),
-		RunE:  clearLogin,
+	loginOpts struct {
+		UserOnly, Clear *bool
 	}
 )
 
-func login(cmd *cobra.Command, _ []string) error {
-	userOnly, err := cmd.LocalFlags().GetBool("user-only")
-	if err != nil {
-		return err
+func login() error {
+	if *loginOpts.Clear {
+		return clearLogin()
 	}
 
 	var (
 		p   = interact.NewPrompter()
 		cfg = new(config.Config)
 	)
-	if err = p.QueryMissing(cfg, userOnly); err != nil {
+	if err := p.QueryMissing(cfg, *loginOpts.UserOnly); err != nil {
 		return err
 	}
 	p.Println()
@@ -60,7 +55,7 @@ func login(cmd *cobra.Command, _ []string) error {
 	return nil
 }
 
-func clearLogin(_ *cobra.Command, _ []string) error {
+func clearLogin() error {
 	fmt.Println("Removing config file with saved credentials...")
 
 	removed, err := config.Remove()

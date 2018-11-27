@@ -1,7 +1,9 @@
 package interact
 
 import (
+	"log"
 	"math/rand"
+	"os"
 	"time"
 
 	"github.com/stevenxie/begone/internal/config"
@@ -12,6 +14,8 @@ import (
 // A BotRunner knows how to configure and run a Bot.
 type BotRunner struct {
 	*Prompter
+	Debug bool
+
 	rng *rand.Rand
 	Bot *mbot.Bot
 }
@@ -23,7 +27,13 @@ func NewBotRunner() *BotRunner {
 
 // NewBotRunnerWith returns a new BotRunner that interacts with the user using
 // Prompter p.
+//
+// If p is nil, it will be set to a Prompter with the default configuration.
 func NewBotRunnerWith(p *Prompter) *BotRunner {
+	if p == nil {
+		p = NewPrompter()
+	}
+
 	src := rand.NewSource(time.Now().Unix())
 	return &BotRunner{
 		Prompter: p,
@@ -63,6 +73,10 @@ func (br *BotRunner) Configure(bcfg *mbot.Config) error {
 	bcfg.Username = cfg.Username
 	bcfg.Password = cfg.Password
 
+	// Build and configure logger if applicable.
 	br.Bot, err = bcfg.Build()
+	if br.Debug {
+		br.Bot.Logger = log.New(os.Stderr, "", 0)
+	}
 	return err
 }

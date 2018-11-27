@@ -6,67 +6,65 @@ import (
 	"path/filepath"
 	str "strings"
 
-	"github.com/spf13/cobra"
-	"github.com/stevenxie/begone/internal/interact"
+	"gopkg.in/alecthomas/kingpin.v2"
+
 	"github.com/stevenxie/begone/mbot"
 	ess "github.com/unixpickle/essentials"
 )
 
-var imageCmd = &cobra.Command{
-	Use: "image [flags] FILEPATH\n  begone image [flags] FILEPATH " +
-		"[CONVERSATION ID]",
-	Short: "Spam a target with an image",
-	Long:  "Image spams a target with an image file.",
-	Args:  withUsage(cobra.RangeArgs(1, 2)),
-	RunE:  image,
+func registerImageCmd(app *kingpin.Application) {
+	imageCmd = app.Command("image", "Spam a target with an image file.")
+
+	// Args:
+	imageOpts.Path = imageCmd.Arg("filepath", "Path to the image file to send.").
+		Required().String()
+
+	imageOpts.ConvoID = imageCmd.Arg(
+		"conversation ID",
+		"The target conversation ID (last portion of a www.messenger.com link).",
+	).Default("").String()
 }
 
-func image(cmd *cobra.Command, args []string) error {
-	// Parse arguments.
-	var (
-		fpath, convoID string
-		p              = interact.NewPrompter()
-	)
+var (
+	imageCmd *kingpin.CmdClause
 
-	fpath = args[0]
-	if len(args) > 1 {
-		convoID = args[1]
+	imageOpts struct {
+		Path, ConvoID *string
 	}
+)
 
+func image() error {
 	// Validate file.
-	info, err := os.Stat(fpath)
+	info, err := os.Stat(*imageOpts.Path)
 	if err != nil {
 		return err
 	}
 
 	if info.IsDir() {
-		return fmt.Errorf("path '%s' refers to directory, not an image file", fpath)
+		return fmt.Errorf("path '%s' refers to directory, not an image file",
+			*imageOpts.Path)
 	}
 
-	switch str.ToLower(filepath.Ext(fpath)) {
+	switch str.ToLower(filepath.Ext(*imageOpts.Path)) {
 	case ".jpeg", ".jpg", ".png", ".gif":
 	default:
-		return fmt.Errorf("file '%s' is not an image", filepath.Base(fpath))
-	}
-
-	// Derive Bot config.
-	bcfg, err := deriveBotConfig(cmd.Flags())
-	if err != nil {
-		return ess.AddCtx("deriving bot config", err)
+		return fmt.Errorf("file '%s' is not an image",
+			filepath.Base(*imageOpts.Path))
 	}
 
 	// Derive convoURL.
-	convoURL, err := deriveConvoURL(convoID, p)
+	runner := deriveBotRunner(nil)
+	convoURL, err := deriveConvoURL(*imageOpts.ConvoID, runner.Prompter)
 	if err != nil {
 		return err
 	}
 
 	// Configure and run BotRunner.
-	runner := interact.NewBotRunnerWith(p)
+	bcfg := deriveBotConfig()
 	if err = runner.Configure(bcfg); err != nil {
 		return ess.AddCtx("configuring BotRunner", err)
 	}
 	return runner.Run(func(bot *mbot.Bot) error {
-		return bot.CycleImage(convoURL, fpath)
+		return bot.CycleImage(convoURL, *imageOpts.ConvoID)
 	})
 }
