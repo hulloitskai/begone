@@ -59,6 +59,6 @@ func image() error {
 		return ess.AddCtx("configuring BotRunner", err)
 	}
 	return runner.Run(func(bot *mbot.Bot) error {
-		return bot.CycleImage(convoURL, copts.ConvoID)
+		return bot.CycleImage(convoURL, imagePath)
 	})
 }
