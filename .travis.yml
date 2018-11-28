@@ -1,0 +1,57 @@
+language: go
+
+go:
+  - '1.11'
+  - tip
+
+git:
+  depth: 3
+
+os:
+  - osx
+  - linux
+
+env:
+  global:
+    - GO111MODULE=on
+    - GOPATH="${TRAVIS_HOME}/gopath"
+    - GOBIN="${GOPATH}/bin"
+    - GOLINT="${GOBIN}/golint"
+    - PATH="${GOBIN}:${PATH}"
+
+## Cache Golint installation.
+cache:
+  directories:
+    ## Preserve golint executable.
+    - $GOBIN
+    ## Preserve Go module cache.
+    - $GOPATH/pkg/mod/cache
+
+## Mark Go version 'tip' as an optional.
+matrix:
+  allow_failures:
+    - go: 'tip'
+  fast_finish: true
+
+## Install dependencies and code review tools.
+before_install:
+  - echo "GOBIN=${GOBIN}" "GOLINT_BIN=${GOLINT_BIN}" "PATH=${PATH}"
+  ## Install golint, if no installation cache exists.
+  - |
+    if ! command -v golint > /dev/null; then
+      rm -rf $GOLINT_BIN
+      echo "Installing 'golint'..."
+      GO111MODULE=off go get -u golang.org/x/lint/golint
+    fi
+  - command -v golint
+
+install:
+  ## Install all dependencies.
+  - make dl
+
+## List diagnostic information before running tests.
+before_script:
+  - go env
+
+## Perform a code check, and ensure there are no build errors.
+script: make check && make build

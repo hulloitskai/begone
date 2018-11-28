@@ -226,7 +226,7 @@ install:
 
 ## Formats the source code using "gofmt".
 FMT_CMD = \
-	if ! which gofmt > /dev/null; then \
+	if ! command -v gofmt > /dev/null; then \
 	  echo '"gofmt" is required to format source code.'; \
 	else \
 	  echo 'Formatting source code using "gofmt"...' && \
@@ -237,7 +237,7 @@ fmt:
 
 ## Lints the source code using "golint".
 LINT_CMD = \
-	if ! which golint > /dev/null; then \
+	if ! command -v golint > /dev/null; then \
 	  echo '"golint" is required to lint soure code.' >&2; \
 	else \
 	  echo 'Formatting source code using "golint"...' && \
