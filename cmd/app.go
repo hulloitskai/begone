@@ -14,7 +14,7 @@ var (
 	//
 	// It should match the output of the following command:
 	//     git describe --tags | cut -c 2-
-	Version string
+	Version = "unknown"
 
 	app = kingpin.New(
 		"begone",
