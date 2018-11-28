@@ -21,7 +21,7 @@ Messenger client. And, like all my CLI programs, written in
 ## Features
 * `begone emojify` – send streams of emojis, en masse
 * `begone repeat` – keep repeating a message
-* `begone file` – read a file line-by-line to someone
+* `begone file` – send a file one line at a time
 * `begone image` – continually send an image
 
 ## Usage
@@ -73,6 +73,19 @@ $ begone help <command>  # i.e. begone help emojify
 
 ## Advanced Usage
 
+### Piping to `begone`
+As of `v1.5.0`, it is possible to pipe from an external source to `begone`. This
+notably allows for integration with [`dgen`](https://github.com/stevenxie/dgen),
+for what is probably one of the most destructive command pipelines I have ever
+seen:
+
+```bash
+dgen "👅" fb | begone repeat --stdin <conversation ID>
+```
+
+_Reserve this pipeline for extremely rare occasions. I am not responsible for
+ the extreme amount of damage this might cause if used regularly._
+ 
 ### Making from source
 
 > This requires the [Go](https://golang.org) language and associated toolchain
@@ -85,7 +98,7 @@ $ git clone git@github.com:stevenxie/begone.git
 $ cd begone
 
 ## Install module dependencies.
-$ make dl # (or go mod download)
+$ make dl  # (or go mod download)
 
 ## Compile and install a version for your machine.
 $ make install  # (or go install)
@@ -97,6 +110,7 @@ $ make install  # (or go install)
 - [x] Add more emojis to the `Emojifier` generator.
 - [x] Create different interaction implementations for Windows (the spinners
       and attack text look kinda funky).
+- [x] Allow for simple piping to `begone` from an external command / file.
 
 [grp]: https://goreportcard.com/report/github.com/stevenxie/begone
 [grp-img]: https://goreportcard.com/badge/github.com/stevenxie/begone

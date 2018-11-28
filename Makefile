@@ -19,7 +19,7 @@ GORELEASER = true
 SECRETS = false
 
 ## Custom Go linker flags:
-LDFLAGS = -X github.com/stevenxie/begone/cmd.Version=$(VERSION)
+LDFLAGS = -X github.com/stevenxie/$(PKG_NAME)/cmd.Version=$(VERSION)
 
 
 ## Source configs:
@@ -27,7 +27,7 @@ SRC_FILES = $(shell find . -type f -name '*.go' -not -path "./vendor/*")
 SRC_PKGS = $(shell go list ./... | grep -v /vendor/)
 
 ## Testing configs:
-TEST_TIMEOUT = 20
+TEST_TIMEOUT = 20s
 COVER_OUT = coverage.out
 
 

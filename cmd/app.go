@@ -10,13 +10,12 @@ import (
 
 var (
 	// Version is the program version. To be generated upon compilation by:
-	//   -ldflags "-X github.com/stevenxie/begone/cmd.Version=$(VERSION)"
+	//     -ldflags "-X github.com/stevenxie/begone/cmd.Version=$(VERSION)"
 	//
 	// It should match the output of the following command:
-	//   git describe --tags | cut -c 2-
+	//     git describe --tags | cut -c 2-
 	Version string
 
-	// app (program entrypoint).
 	app = kingpin.New(
 		"begone",
 		"A fully automatic spamming tool for FB Messenger.",

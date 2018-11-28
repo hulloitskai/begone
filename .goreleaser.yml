@@ -15,7 +15,7 @@ builds:
       - linux
 
     ldflags:
-      - "-X github.com/stevenxie/begone/cmd.Version={{.Version}}"
+      - "-X github.com/stevenxie/{{.ProjectName}}/cmd.Version={{.Version}}"
 
 
 ## Create an archive with built binaries and the README, license, etc.
