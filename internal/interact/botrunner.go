@@ -1,6 +1,7 @@
 package interact
 
 import (
+	"errors"
 	"log"
 	"math/rand"
 	"os"
@@ -14,7 +15,7 @@ import (
 // A BotRunner knows how to configure and run a Bot.
 type BotRunner struct {
 	*Prompter
-	Debug bool
+	Debug, Interactive bool
 
 	rng *rand.Rand
 	Bot *mbot.Bot
@@ -25,10 +26,10 @@ func NewBotRunner() *BotRunner {
 	return NewBotRunnerWith(NewPrompter())
 }
 
-// NewBotRunnerWith returns a new BotRunner that interacts with the user using
-// Prompter p.
+// NewBotRunnerWith returns a new BotRunner with a default configuration that
+// interacts with the user using Prompter p.
 //
-// If p is nil, it will be set to a Prompter with the default configuration.
+// If p is nil, it will be set to the default Prompter.
 func NewBotRunnerWith(p *Prompter) *BotRunner {
 	if p == nil {
 		p = NewPrompter()
@@ -36,8 +37,9 @@ func NewBotRunnerWith(p *Prompter) *BotRunner {
 
 	src := rand.NewSource(time.Now().Unix())
 	return &BotRunner{
-		Prompter: p,
-		rng:      rand.New(src),
+		Interactive: true,
+		Prompter:    p,
+		rng:         rand.New(src),
 	}
 }
 
@@ -57,16 +59,25 @@ func (br *BotRunner) Configure(bcfg *mbot.Config) error {
 		return ess.AddCtx("interact: loading config file", err)
 	}
 
-	// Prevent overriding bcfg values.
-	if bcfg.Username != "" {
-		cfg.Username = bcfg.Username
-	}
-	if bcfg.Password != "" {
-		cfg.Password = bcfg.Password
-	}
+	if br.Interactive {
+		// Prevent overriding bcfg values.
+		if bcfg.Username != "" {
+			cfg.Username = bcfg.Username
+		}
+		if bcfg.Password != "" {
+			cfg.Password = bcfg.Password
+		}
 
-	if err = br.QueryMissing(cfg, false); err != nil {
-		return ess.AddCtx("interact: querying for missing values", err)
+		if err = br.QueryMissing(cfg, false); err != nil {
+			return ess.AddCtx("interact: querying for missing values", err)
+		}
+	} else {
+		if cfg.Username == "" {
+			return errors.New("interact: username not previously saved")
+		}
+		if cfg.Password == "" {
+			return errors.New("interact: password not previously saved")
+		}
 	}
 
 	// Amend bcfg with new credentials.
