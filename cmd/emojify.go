@@ -1,10 +1,11 @@
 package cmd
 
 import (
+	"gopkg.in/alecthomas/kingpin.v2"
+
 	"github.com/stevenxie/begone/mbot"
 	"github.com/stevenxie/begone/strgen"
 	ess "github.com/unixpickle/essentials"
-	"gopkg.in/alecthomas/kingpin.v2"
 )
 
 func registerEmojifyCmd(app *kingpin.Application) {

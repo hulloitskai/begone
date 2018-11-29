@@ -61,9 +61,9 @@ func (b *Bot) CycleUsing(c Cycler) error {
 				}
 
 				time.Sleep(time.Duration(b.Cfg.SendFailDelay) * time.Millisecond)
-			} else {
-				return ess.AddCtx("mbot: cycle error", err)
+				continue
 			}
+			return ess.AddCtx("mbot: cycle error", err)
 		}
 
 		// No send fail occurred; reset our consecutive send failures tracker.

@@ -34,7 +34,7 @@ type Config struct {
 
 // NewConfig returns a Config with default values.
 func NewConfig() *Config {
-	return &Config{Cycles: -1, Delay: 225, MaxSendFails: 3, SendFailDelay: 1000}
+	return &Config{Cycles: -1, Delay: 250, MaxSendFails: 2, SendFailDelay: 1250}
 }
 
 // Validate checks if the Config is valid, i.e. if a Bot can run properly if
