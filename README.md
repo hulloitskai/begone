@@ -20,10 +20,11 @@ Messenger client. And, like all my CLI programs, written in
 </p>
 
 ## Features
-* `begone emojify` – send streams of emojis, en masse
-* `begone repeat` – keep repeating a message
-* `begone file` – send a file one line at a time
-* `begone image` – continually send an image
+
+- `begone emojify` – send streams of emojis, en masse
+- `begone repeat` – keep repeating a message
+- `begone file` – send a file one line at a time
+- `begone image` – continually send an image
 
 ## Usage
 
@@ -75,6 +76,7 @@ $ begone help <command>  # i.e. begone help emojify
 ## Advanced Usage
 
 ### Piping to `begone`
+
 As of `v1.5.0`, it is possible to pipe from an external source to `begone`. This
 notably allows for integration with [`dgen`](https://github.com/stevenxie/dgen),
 resulting in one of the most destructive command pipelines I have ever seen:
@@ -84,8 +86,8 @@ dgen "👅" fb | begone repeat --stdin <conversation ID>
 ```
 
 _Reserve this pipeline for extremely rare occasions. I am not responsible for
- the extreme amount of damage this might cause if used regularly._
- 
+the extreme amount of damage this might cause if used regularly._
+
 ### Making from source
 
 > This requires the [Go](https://golang.org) language and associated toolchain
@@ -107,6 +109,7 @@ $ make install  # (or go install)
 ## FAQ
 
 ### Will this steal my password?
+
 No. Your password is sent directly to Facebook's servers, as if you were logging
 in from [messenger.com](https://www.messenger.com) or from Facebook itself.
 
@@ -114,11 +117,12 @@ _But don't take my word for it!_
 [See the code for yourself](https://github.com/stevenxie/fbmsgr/blob/27295a7d480147bdf80f88f01ac9d0fc4b4dffba/auth.go#L76).
 
 ### Will I get banned for using this?
+
 Uhhhh I mean, don't use this too often (and don't leave it running for too long)
 and you should be fine.
 
-Just... play it safe-ish. Don't abuse this tool too much.
-[_The Zucc_](https://www.urbandictionary.com/define.php?term=The%20Zucc) is
+Just... play it safe-ish. Don't abuse this tool too much. The
+[_Zucc_](https://www.urbandictionary.com/define.php?term=The%20Zucc) is
 always watching 👀.
 
 ## TODOs
