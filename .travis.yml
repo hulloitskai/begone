@@ -19,7 +19,6 @@ env:
     - GOLINT="${GOBIN}/golint"
     - PATH="${GOBIN}:${PATH}"
 
-## Cache Golint installation.
 cache:
   directories:
     ## Preserve golint executable.
@@ -36,6 +35,7 @@ matrix:
 ## Install dependencies and code review tools.
 before_install:
   - echo "GOBIN=${GOBIN}" "GOLINT_BIN=${GOLINT_BIN}" "PATH=${PATH}"
+
   ## Install golint, if no installation cache exists.
   - |
     if ! command -v golint > /dev/null; then

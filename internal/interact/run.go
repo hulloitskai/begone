@@ -12,7 +12,7 @@ import (
 // BotFunc is a function that uses bot to perform some kind of action.
 type BotFunc func(bot *mbot.Bot) error
 
-// Run is a CLI-aware wrapper around bf.
+// Run is a CLI-aware wrapper around br.
 func (br *BotRunner) Run(bf BotFunc) error {
 	// Ensure br is ready.
 	if br.Bot == nil {
@@ -31,7 +31,7 @@ func (br *BotRunner) Run(bf BotFunc) error {
 	)
 
 	switch br.Mode {
-	case Standard:
+	case Standard: // only show spinner on Standard mode
 		spinner = cyanSpinner(msg, finalMsg)
 		defer func() {
 			spinner.Stop()

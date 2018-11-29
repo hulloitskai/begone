@@ -1,10 +1,9 @@
 # begone
 
-_A fully automatic spamming tool, created for the sole purpose of
-obliterating conversation threads on
-[Facebook Messenger](https://messenger.com)._
+_A fully automatic spamming tool, created for the sole purpose of obliterating
+conversation threads on [Facebook Messenger](https://messenger.com)._
 
-[![Github Release][release-img]][release]
+[![Release][release-img]][release]
 [![Go Report Card][grp-img]][grp]
 [![Travis: Build][travis-img]][travis]
 
@@ -51,7 +50,9 @@ Ensure that the binary is executable, and place it somewhere in your `$PATH`.
 For macOS users, this might look something like this:
 
 ```bash
-$ mv ~/Downloads/begone-darwin-x64 /usr/local/bin/begone
+$ cd ~/Downloads
+$ unar begone-1.5.2-macOS-x86_64.tar.gz
+$ mv begone-1.5.2-macOS-x86_64/begone /usr/local/bin/begone
 $ chmod u+x /usr/local/bin/begone
 ```
 
@@ -137,5 +138,5 @@ always watching 👀.
 [grp-img]: https://goreportcard.com/badge/github.com/stevenxie/begone
 [release]: https://github.com/stevenxie/begone/releases
 [release-img]: https://img.shields.io/github/release/stevenxie/begone.svg
-[travis-img]: https://travis-ci.com/stevenxie/begone.svg?branch=master
 [travis]: https://travis-ci.com/stevenxie/begone
+[travis-img]: https://travis-ci.com/stevenxie/begone.svg?branch=master
