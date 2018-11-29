@@ -6,9 +6,10 @@ obliterating conversation threads on
 
 [![Github Release][release-img]][release]
 [![Go Report Card][grp-img]][grp]
+[![Travis: Build][travis-img]][travis]
 
 Works with individual conversations as well as group threads—a real versatile
-beast. Uses a modified version of
+beast. Uses a [modified version](https://github.com/stevenxie/fbmsgr) of
 [`unixpickle/fbmsgr`](https://github.com/unixpickle/fbmsgr) as the underlying
 Messenger client. And, like all my CLI programs, written in
 [Go](https://golang.org).
@@ -76,8 +77,7 @@ $ begone help <command>  # i.e. begone help emojify
 ### Piping to `begone`
 As of `v1.5.0`, it is possible to pipe from an external source to `begone`. This
 notably allows for integration with [`dgen`](https://github.com/stevenxie/dgen),
-for what is probably one of the most destructive command pipelines I have ever
-seen:
+resulting in one of the most destructive command pipelines I have ever seen:
 
 ```bash
 dgen "👅" fb | begone repeat --stdin <conversation ID>
@@ -104,6 +104,23 @@ $ make dl  # (or go mod download)
 $ make install  # (or go install)
 ```
 
+## FAQ
+
+### Will this steal my password?
+No. Your password is sent directly to Facebook's servers, as if you were logging
+in from [messenger.com](https://www.messenger.com) or from Facebook itself.
+
+_But don't take my word for it!_
+[See the code for yourself](https://github.com/stevenxie/fbmsgr/blob/27295a7d480147bdf80f88f01ac9d0fc4b4dffba/auth.go#L76).
+
+### Will I get banned for using this?
+Uhhhh I mean, don't use this too often (and don't leave it running for too long)
+and you should be fine.
+
+Just... play it safe-ish. Don't abuse this tool too much.
+[_The Zucc_](https://www.urbandictionary.com/define.php?term=The%20Zucc) is
+always watching 👀.
+
 ## TODOs
 
 - [x] (maybe) Implement attacks using local files (images)?
@@ -116,3 +133,5 @@ $ make install  # (or go install)
 [grp-img]: https://goreportcard.com/badge/github.com/stevenxie/begone
 [release]: https://github.com/stevenxie/begone/releases
 [release-img]: https://img.shields.io/github/release/stevenxie/begone.svg
+[travis-img]: https://travis-ci.com/stevenxie/begone.svg?branch=master
+[travis]: https://travis-ci.com/stevenxie/begone
