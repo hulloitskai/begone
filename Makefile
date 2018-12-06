@@ -12,7 +12,9 @@ MAINDIR = "."
 OUTDIR  = "."
 
 ## Enable Go modules for this project.
-MODULES = true
+MODULE = true
+## Enable `go generate` for this project.
+GENERATE = true
 ## Enable goreleaser for this project.
 GORELEASER = true
 ## Enable git-secret for this project.
@@ -41,7 +43,7 @@ default: build-run
 ## Sets up this project on a new device.
 setup: hooks-setup
 	@if [ "$(SECRETS)" == true ]; then $(SECRETS_REVEAL_CM); fi
-	@if [ "$(MODULES)" == true ]; \
+	@if [ "$(MODULE)" == true ]; \
 	 then $(DL_CMD); \
 	 else $(GET_CMD); \
 	 fi
@@ -79,7 +81,7 @@ secrets-reveal:
 
 
 ## [Go: modules]
-.PHONY: init verify dl vendor tidy update fix
+.PHONY: mod-init verify dl vendor tidy update fix
 
 ## Initializes a Go module in the current directory.
 ## Variables: MODPATH (module source path)
@@ -137,7 +139,7 @@ get:
 
 
 ## [Go: setup, running]
-.PHONY: build build-all build-run run clean install
+.PHONY: build build-all build-run generate run clean install
 
 ## Runs the built program.
 ## Sources .env.sh if it exists.
@@ -161,6 +163,12 @@ RUN_CMD = \
 run:
 	@$(RUN_CMD)
 
+generate:
+	@if [ "$(GENERATE)" == true ]; then \
+	   echo "Generating Go code using 'go generate'..." && \
+	   go generate ./...; \
+	 fi
+
 ## Builds (compiles) the program for this system.
 ## Variables:
 ##   - OUTDIR (output directory to place built binaries)
@@ -174,7 +182,7 @@ BUILD_CMD = \
 	  -ldflags "$(LDFLAGS)" \
 	  $(BUILDARGS) $(MAINDIR) && \
 	echo "done"
-build:
+build: generate
 	@$(BUILD_CMD)
 
 ## Builds (cross-compiles) the program for all systems.
@@ -182,7 +190,7 @@ build:
 ##   - OUTDIR (output path to place built binaries)
 ##   - MAINDIR (directory of the main package)
 ##   - BUILDARGS (additional arguments to pass to "go build")
-build-all:
+build-all: generate
 	@echo 'Building "$(PKG_NAME)" for all systems:'
 	@for GOOS in darwin linux windows; do \
 	   for GOARCH in amd64 386; do \

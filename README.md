@@ -51,7 +51,7 @@ For macOS users, this might look something like this:
 
 ```bash
 $ cd ~/Downloads
-$ unar begone-1.5.2-macOS-x86_64.tar.gz
+$ unzip begone-1.5.2-macOS-x86_64.zip
 $ mv begone-1.5.2-macOS-x86_64/begone /usr/local/bin/begone
 $ chmod u+x /usr/local/bin/begone
 ```

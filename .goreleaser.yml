@@ -30,11 +30,11 @@ archive:
     i386: 386
     amd64: x86_64
 
-  ## Pack archive on 'tar.gz' format on all platforms except Windows.
-  format: "tar.gz"
+  ## Pack archive in 'tar.gz' for Linux.
+  format: "zip"
   format_overrides:
-    - goos: windows
-      format: zip
+    - goos: linux
+      format: tar.gz
 
   files:
     - LICENSE*
