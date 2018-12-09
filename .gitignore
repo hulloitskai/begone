@@ -5,10 +5,14 @@ coverage.out
 /build/
 /dist/
 /*begone*
-!/*begone*/
-!/*begone*.go
+!/*begone*.*
+/*begone*.exe
+
 ## Secrets:
 .env
+
+## git-secret:
+.gitsecret/keys/random_seed
 
 
 ## [Go]
@@ -44,8 +48,3 @@ Thumbs.db
 
 ## IntelliJ
 .idea/
-
-
-## [Miscellaneous]
-## git-secret:
-.gitsecret/keys/random_seed

@@ -14,7 +14,7 @@ check() {
 }
 check || exit $?
 
-## [GIT SECRET]
+## [git-secret]
 git-secret() {
   echo # visual separator
 

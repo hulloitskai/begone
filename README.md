@@ -114,7 +114,7 @@ $ make install  # (or go install)
 No. Your password is sent directly to Facebook's servers, as if you were logging
 in from [messenger.com](https://www.messenger.com) or from Facebook itself.
 
-_But don't take my word for it!_
+_Don't want to take my word for it?_
 [See the code for yourself](https://github.com/stevenxie/fbmsgr/blob/27295a7d480147bdf80f88f01ac9d0fc4b4dffba/auth.go#L76).
 
 ### Will I get banned for using this?

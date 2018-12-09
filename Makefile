@@ -1,4 +1,4 @@
-## ----- Variables -----
+## ----- VARIABLES -----
 PKG_NAME = $(shell basename "$$(pwd)")
 ifeq ($(shell ls -1 go.mod 2> /dev/null),go.mod) # use module name from go.mod, if applicable
 	PKG_NAME = $(shell basename "$$(cat go.mod | grep module | awk '{print $$2}')")
@@ -14,7 +14,7 @@ OUTDIR  = "."
 ## Enable Go modules for this project.
 MODULE = true
 ## Enable `go generate` for this project.
-GENERATE = true
+GENERATE = false
 ## Enable goreleaser for this project.
 GORELEASER = true
 ## Enable git-secret for this project.
@@ -34,7 +34,7 @@ COVER_OUT = coverage.out
 
 
 
-## ------ Commands (targets) -----
+## ------ COMMANDS -----
 .PHONY: default setup init
 
 ## Default target when no arguments are given to make (build and run program).
