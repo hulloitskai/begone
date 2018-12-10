@@ -40,6 +40,7 @@ archive:
     - LICENSE*
     - README*
     - autocomplete/**/*
+    - resources/**/*
 
 ## Create a checksums file to allow verifying the integrity of the downloads.
 checksum:

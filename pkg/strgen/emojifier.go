@@ -6,7 +6,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/stevenxie/begone/emoji"
+	"github.com/stevenxie/begone/pkg/emoji"
 	ess "github.com/unixpickle/essentials"
 )
 

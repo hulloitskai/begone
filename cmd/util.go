@@ -5,7 +5,7 @@ import (
 
 	"github.com/stevenxie/begone/internal/interact"
 	inter "github.com/stevenxie/begone/internal/interact"
-	"github.com/stevenxie/begone/mbot"
+	"github.com/stevenxie/begone/pkg/mbot"
 	"github.com/stevenxie/fbmsgr"
 	ess "github.com/unixpickle/essentials"
 )

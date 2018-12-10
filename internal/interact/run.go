@@ -5,7 +5,7 @@ import (
 	"time"
 
 	spin "github.com/briandowns/spinner"
-	"github.com/stevenxie/begone/mbot"
+	"github.com/stevenxie/begone/pkg/mbot"
 	"github.com/unixpickle/essentials"
 )
 

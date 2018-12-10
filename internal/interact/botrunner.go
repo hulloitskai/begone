@@ -8,7 +8,7 @@ import (
 	"time"
 
 	"github.com/stevenxie/begone/internal/config"
-	"github.com/stevenxie/begone/mbot"
+	"github.com/stevenxie/begone/pkg/mbot"
 	ess "github.com/unixpickle/essentials"
 )
 

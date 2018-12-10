@@ -8,7 +8,7 @@ import (
 
 	"gopkg.in/alecthomas/kingpin.v2"
 
-	"github.com/stevenxie/begone/mbot"
+	"github.com/stevenxie/begone/pkg/mbot"
 	ess "github.com/unixpickle/essentials"
 )
 

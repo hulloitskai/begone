@@ -9,8 +9,8 @@ import (
 	"gopkg.in/alecthomas/kingpin.v2"
 
 	"github.com/stevenxie/begone/internal/interact"
-	"github.com/stevenxie/begone/mbot"
-	"github.com/stevenxie/begone/strgen"
+	"github.com/stevenxie/begone/pkg/mbot"
+	"github.com/stevenxie/begone/pkg/strgen"
 	ess "github.com/unixpickle/essentials"
 )
 
