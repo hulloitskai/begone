@@ -69,9 +69,11 @@ func (br *BotRunner) Run(bf BotFunc) error {
 		br.Bot.Counter = make(chan int)
 		go func() {
 			sfx := spinner.Suffix
-			for count := range br.Bot.Counter {
+			var count int
+			for count = range br.Bot.Counter {
 				spinner.Suffix = fmt.Sprintf("%s (sent: %d)", sfx, count)
 			}
+			fmt.Printf("Total messages sent: %d\n", count)
 		}()
 
 	case Reduced:

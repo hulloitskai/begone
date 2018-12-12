@@ -40,7 +40,7 @@ func (b *Bot) extractFBEntity(convoURL string) (*fbEntity, error) {
 		return nil, err
 	}
 	if res.StatusCode != 200 {
-		return nil, fmt.Errorf("recieved non-200 response (code: %d)",
+		return nil, fmt.Errorf("received non-200 response (code: %d)",
 			res.StatusCode)
 	}
 	defer res.Body.Close()

@@ -10,10 +10,11 @@ require (
 	github.com/mattn/go-colorable v0.0.9 // indirect
 	github.com/mattn/go-isatty v0.0.4 // indirect
 	github.com/pmezard/go-difflib v1.0.0 // indirect
-	github.com/stevenxie/fbmsgr v0.0.0-20181121182201-27295a7d4801
+	github.com/stevenxie/fbmsgr v0.2.0
 	github.com/stretchr/testify v1.2.2 // indirect
 	github.com/unixpickle/essentials v0.0.0-20180916162721-ae02bc395f1d
 	golang.org/x/crypto v0.0.0-20181112202954-3d3f9f413869 // indirect
+	golang.org/x/net v0.0.0-20181207154023-610586996380 // indirect
 	golang.org/x/sys v0.0.0-20181122145206-62eef0e2fa9b // indirect
 	gopkg.in/alecthomas/kingpin.v2 v2.2.6
 )

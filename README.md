@@ -81,7 +81,7 @@ $ begone help <command>  # i.e. begone help emojify
 As of `v1.5.0`, it is possible to pipe from an external source to `begone`. This
 notably allows for integration with [`dgen`](https://github.com/stevenxie/dgen),
 resulting in one of the most destructive command pipelines I have ever seen (which can
-output at a rate of ~20,000 emojis per second):
+output at a rate of ~30,000 emojis per second):
 
 ```bash
 dgen "👅" fb | begone repeat --stdin <conversation ID>
