@@ -18,6 +18,14 @@ Messenger client. And, like all my CLI programs, written in
   <img src="./.github/demo.gif" width=600>
 </p>
 
+#### Project Status:
+
+`finished` `feature-complete`
+
+> Updates from now on will only be for maintenance. If Facebook's hidden
+> Messenger API is updated drastically, this project will be deprecated. Let's
+> hope that doesn't happen anytime soon!
+
 ## Features
 
 - `begone emojify` – send streams of emojis, en masse
