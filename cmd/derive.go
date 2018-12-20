@@ -2,6 +2,7 @@ package cmd
 
 import (
 	"fmt"
+	"strings"
 
 	"github.com/stevenxie/begone/internal/interact"
 	inter "github.com/stevenxie/begone/internal/interact"
@@ -38,8 +39,13 @@ func deriveConvoURL(id string, p *inter.Prompter) (convoURL string, err error) {
 	}
 
 	if id != "" {
-		convoURL = fmt.Sprintf("%s/t/%s", fbmsgr.BaseURL, id)
-	} else if convoURL, err = p.QueryConvoURL(); err != nil {
+		if strings.HasPrefix(id, "https://www.messenger.com") {
+			return "", fmt.Errorf("expected convo ID, not convo URL (got '%s')", id)
+		}
+		return fmt.Sprintf("%s/t/%s", fbmsgr.BaseURL, id), nil
+	}
+
+	if convoURL, err = p.QueryConvoURL(); err != nil {
 		return "", ess.AddCtx("querying for conversation URL", err)
 	}
 	return convoURL, nil
