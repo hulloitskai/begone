@@ -2,6 +2,7 @@ package interact
 
 import (
 	"fmt"
+	"strings"
 	"time"
 
 	spin "github.com/briandowns/spinner"
@@ -34,8 +35,10 @@ func (br *BotRunner) Run(bf BotFunc) error {
 	case Standard: // only show spinner on Standard mode
 		spinner = cyanSpinner(msg, finalMsg)
 		defer func() {
-			spinner.Stop()
-			fmt.Println()
+			if spinner.Active() {
+				spinner.Stop()
+				br.Println()
+			}
 		}()
 	case Reduced:
 		br.Println(msg)
@@ -53,45 +56,73 @@ func (br *BotRunner) Run(bf BotFunc) error {
 
 	if br.Mode == Standard {
 		spinner.Stop()
+		br.Println()
 	}
-	br.Println()
 
 	// Begin attack.
 	msg = br.runMessage()
 	finalMsg = "Attack finished."
 	failMsg = "Attack was interrupted."
 
+	var count int
 	switch br.Mode {
 	case Standard:
 		spinner = cyanSpinner(msg, finalMsg)
-
-		// Subscribe to updates from bot.Counter.
-		br.Bot.Counter = make(chan int)
-		go func() {
-			sfx := spinner.Suffix
-			var count int
-			for count = range br.Bot.Counter {
-				spinner.Suffix = fmt.Sprintf("%s (sent: %d)", sfx, count)
-			}
-			fmt.Printf("Total messages sent: %d\n", count)
-		}()
-
 	case Reduced:
 		br.Println(msg)
 	}
 
-	if err := bf(br.Bot); err != nil {
+	// Subscribe to updates from bot.Counter.
+	br.Bot.Counter = make(chan int)
+	go func() {
+		var sfx string
+		if br.Mode == Standard {
+			sfx = spinner.Suffix
+		}
+		for count = range br.Bot.Counter {
+			if br.Mode == Standard {
+				spinner.Suffix = fmt.Sprintf("%s (sent: %d)", sfx, count)
+			}
+		}
+	}()
+
+	// Run the BotFunc.
+	err := bf(br.Bot)
+	if err != nil {
 		switch br.Mode {
 		case Standard:
 			spinner.FinalMSG = failMsg
 		case Reduced:
 			br.Println(failMsg)
 		}
-		return err
+	} else if br.Mode == Reduced {
+		br.Println(finalMsg)
 	}
 
-	if br.Mode == Reduced {
-		br.Println(finalMsg)
+	if br.Mode == Standard {
+		spinner.Stop()
+		br.Println()
+	}
+	br.Errf("Total messages sent: %d\n", count)
+
+	// Exit early if there are no errors.
+	if err == nil {
+		return nil
+	}
+
+	if e := err.Error(); strings.Contains(e, "first cycle") {
+		if !strings.Contains(e, "no message ID in response") {
+			return err // unknown error
+		}
+
+		// Print error, and additional related context.
+		br.Errf("\n%s\n\n", e)
+		br.Errln("Are you sure you entered a valid convo ID / convo URL?")
+		if !br.Bot.Cfg.AssumeUser && strings.Contains(e, "send group text") {
+			br.Errln("If a user's convo ID starts with a number, you may want to " +
+				"use the --assume-user flag to prevent begone from treating it like a " +
+				"group ID.")
+		}
 	}
 	return nil
 }

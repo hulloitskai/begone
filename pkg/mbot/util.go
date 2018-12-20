@@ -29,7 +29,7 @@ func (b *Bot) extractFBEntity(convoURL string) (*fbEntity, error) {
 	// If convoID starts with a number, then it is corresponds to a group fbid.
 	if fchar := id[0]; ('0' <= fchar) && (fchar <= '9') {
 		entity.ID = id
-		entity.IsGroup = true
+		entity.IsGroup = !b.Cfg.AssumeUser
 		return &entity, nil
 	}
 

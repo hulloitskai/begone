@@ -16,6 +16,7 @@ func deriveBotConfig() *mbot.Config {
 	mcfg := mbot.NewConfig()
 	mcfg.Cycles = copts.Cycles
 	mcfg.Delay = copts.Delay
+	mcfg.AssumeUser = copts.AssumeUser
 	return mcfg
 }
 
@@ -23,6 +24,10 @@ func deriveBotConfig() *mbot.Config {
 func deriveBotRunner(p *interact.Prompter) *interact.BotRunner {
 	runner := interact.NewBotRunnerWith(p)
 	runner.Debug = copts.Debug
+
+	if copts.NoFancy {
+		runner.Mode = inter.Reduced
+	}
 	return runner
 }
 

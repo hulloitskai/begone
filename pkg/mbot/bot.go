@@ -11,8 +11,7 @@ type Bot struct {
 	// A Facebook Messenger client session.
 	*fbmsgr.Session
 
-	// A live-updating count of the number of messages sent using the Begone
-	// method.
+	// A live-updating count of the number of messages sent during a spam loop.
 	Counter chan int
 
 	Cfg    *Config

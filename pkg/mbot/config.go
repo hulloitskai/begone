@@ -29,6 +29,9 @@ type Config struct {
 	// sort of 'cool-down period'.
 	SendFailDelay int
 
+	// Assume that a numeric convoID refers to a user, not a group.
+	AssumeUser bool
+
 	Username, Password string
 }
 

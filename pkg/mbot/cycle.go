@@ -48,6 +48,12 @@ func (b *Bot) CycleUsing(c Cycler) error {
 		// Perform cycle action.
 		if err := c.Cycle(b.Session); err != nil {
 			if strings.Contains(err.Error(), "fbmsgr:") { // is a send fail
+				// Fail early if this is the first cycle.
+				if count == 0 {
+					return fmt.Errorf("mbot: encountered send failure on first cycle: %v",
+						err)
+				}
+
 				// If there have been too many consecutive send fails, crash.
 				sendFails++
 				if sendFails > b.Cfg.MaxSendFails {

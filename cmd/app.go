@@ -27,7 +27,7 @@ func Exec(args []string) {
 	var err error
 
 	switch kingpin.MustParse(app.Parse(args)) {
-	// "Attack" subcommands:
+	// Spamming subcommands:
 	case emojifyCmd.FullCommand():
 		err = emojify()
 	case repeatCmd.FullCommand():
