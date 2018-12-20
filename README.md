@@ -123,17 +123,20 @@ $ make install  # (or go install)
 No. Your password is sent directly to Facebook's servers, as if you were logging
 in from [messenger.com](https://www.messenger.com) or from Facebook itself.
 
-_Don't want to take my word for it?_
-[See the code for yourself](https://github.com/stevenxie/fbmsgr/blob/27295a7d480147bdf80f88f01ac9d0fc4b4dffba/auth.go#L76).
+_Don't want to take my word for it?_ See the code for yourself:
+[`begone/pkg/mbot/login.go`](https://github.com/stevenxie/begone/blob/master/pkg/mbot/login.go#L14)
+[`fbmsgr/auth.go`](https://github.com/stevenxie/fbmsgr/blob/27295a7d480147bdf80f88f01ac9d0fc4b4dffba/auth.go#L76)
 
 ### Will I get banned for using this?
 
 Uhhhh I mean, don't use this too often (and don't leave it running for too long)
 and you should be fine.
 
-Just... play it safe-ish. Don't abuse this tool too much. The
-[_Zucc_](https://www.urbandictionary.com/define.php?term=The%20Zucc) is
+Just... play it safe-ish. Don't abuse this tool too much.
+[_The Zucc_](https://www.urbandictionary.com/define.php?term=The%20Zucc) is
 always watching 👀.
+
+<br />
 
 ## TODOs
 
