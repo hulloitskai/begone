@@ -124,7 +124,7 @@ func (br *BotRunner) Run(bf BotFunc) error {
 				"group ID.")
 		}
 	}
-	return nil
+	return err
 }
 
 var runMessages = []string{
