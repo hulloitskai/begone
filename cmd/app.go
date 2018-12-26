@@ -3,7 +3,7 @@ package cmd
 import (
 	"os"
 
-	"gopkg.in/alecthomas/kingpin.v2"
+	kingpin "gopkg.in/alecthomas/kingpin.v2"
 
 	ess "github.com/unixpickle/essentials"
 )
@@ -14,7 +14,7 @@ var (
 	//
 	// It should match the output of the following command:
 	//     git describe --tags | cut -c 2-
-	Version = "unknown"
+	Version = "unset"
 
 	app = kingpin.New(
 		"begone",
@@ -50,4 +50,18 @@ func Exec(args []string) {
 	if err != nil {
 		ess.Die("Error: " + err.Error())
 	}
+}
+
+// Configure app.
+func init() {
+	// Customize help, version flag.
+	app.HelpFlag.Short('h')
+	app.VersionFlag.Short('v')
+
+	// Register commands.
+	registerLoginCmd(app)
+	registerEmojifyCmd(app)
+	registerRepeatCmd(app)
+	registerFileCmd(app)
+	registerImageCmd(app)
 }

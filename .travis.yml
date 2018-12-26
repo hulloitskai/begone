@@ -10,6 +10,7 @@ git:
 os:
   - osx
   - linux
+  - windows
 
 env:
   global:
@@ -28,30 +29,47 @@ cache:
 
 ## Mark Go version 'tip' as an optional.
 matrix:
+  exclude:
+    - go: tip
+      os: windows
   allow_failures:
     - go: 'tip'
+    - os: windows
   fast_finish: true
 
 ## Install dependencies and code review tools.
 before_install:
-  - echo "GOBIN=${GOBIN}" "GOLINT_BIN=${GOLINT_BIN}" "PATH=${PATH}"
+  - echo "GOBIN=$GOBIN" "GOLINT_BIN=$GOLINT_BIN"
 
   ## Install golint, if no installation cache exists.
   - |
-    if ! command -v golint > /dev/null; then
-      rm -rf $GOLINT_BIN
-      echo "Installing 'golint'..."
-      GO111MODULE=off go get -u golang.org/x/lint/golint
+    if [ "$TRAVIS_OS_NAME" != windows ]; then
+      if ! command -v golint > /dev/null; then
+        rm -rf $GOLINT_BIN
+        echo "Installing 'golint'..."
+        GO111MODULE=off go get -u golang.org/x/lint/golint
+      fi
+      command -v golint
     fi
-  - command -v golint
 
+## Install all dependencies.
 install:
-  ## Install all dependencies.
-  - make dl
+  - |
+    if [ "$TRAVIS_OS_NAME" == windows ]; then
+      go mod download
+    else
+      make dl
+    fi
 
 ## List diagnostic information before running tests.
 before_script:
   - go env
 
-## Perform a code check, and ensure there are no build errors.
-script: make check && make build
+## Check code, ensure there are no build errors.
+script:
+  - |
+    if [ "$TRAVIS_OS_NAME" == windows ]; then
+      go build -o quest.exe && quest.exe --version
+    else
+      make check && make build && ./quest --version
+    fi
