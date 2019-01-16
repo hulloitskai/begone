@@ -1,14 +1,14 @@
-#!/usr/bin/env bash
+#!/bin/sh
 
-## [GO MOD DEPS]
-dl() {
+## Install dependencies.
+install() {
   echo # visual separator
 
   if ! command -v make >/dev/null 2>&1; then
-    echo "Could not download dependencies with 'make dl'; GNU make not found." >&2
+    echo "Could not download dependencies with 'make install'; GNU make not found." >&2
     return 1
   fi
 
-  make dl || return $?
+  make install || return $?
 }
-dl || exit $?
+install || exit $?

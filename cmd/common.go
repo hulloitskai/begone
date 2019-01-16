@@ -1,6 +1,6 @@
 package cmd
 
-import "gopkg.in/alecthomas/kingpin.v2"
+import kingpin "gopkg.in/alecthomas/kingpin.v2"
 
 func registerCommonOpts(cmd *kingpin.CmdClause) {
 	cmd.Flag("delay", "Delay (in ms) between messages.").Short('d').

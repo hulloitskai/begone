@@ -1,11 +1,10 @@
 package cmd
 
 import (
-	"gopkg.in/alecthomas/kingpin.v2"
-
 	"github.com/stevenxie/begone/pkg/mbot"
 	"github.com/stevenxie/begone/pkg/strgen"
 	ess "github.com/unixpickle/essentials"
+	kingpin "gopkg.in/alecthomas/kingpin.v2"
 )
 
 func registerFileCmd(app *kingpin.Application) {

@@ -1,331 +1,128 @@
 ## ----- VARIABLES -----
-PKG_NAME = $(shell basename "$$(pwd)")
-ifeq ($(shell ls -1 go.mod 2> /dev/null),go.mod) # use module name from go.mod, if applicable
-	PKG_NAME = $(shell basename "$$(cat go.mod | grep module | awk '{print $$2}')")
+## Go module name.
+MODULE = $(shell basename "$$(pwd)")
+ifeq ($(shell ls -1 go.mod 2> /dev/null),go.mod)
+	MODULE = $(shell cat go.mod | grep module | awk '{print $$2}')
 endif
 
-VERSION = $(shell git describe --tags | cut -c 2-)
+## Program version.
+VERSION = "none"
+ifneq ($(shell git describe --tags 2> /dev/null),)
+	VERSION = $(shell git describe --tags | cut -c 2-)
+endif
 
-## Directory of the 'main' package.
-MAINDIR = "."
-## Output directory to place artifacts from 'build' and 'build-all'.
-OUTDIR  = "."
-
-## Enable Go modules for this project.
-MODULE = true
-## Enable `go generate` for this project.
-GENERATE = false
-## Enable goreleaser for this project.
-GORELEASER = true
-## Enable git-secret for this project.
-SECRETS = false
-
-## Custom Go linker flags:
-LDFLAGS = -X github.com/stevenxie/$(PKG_NAME)/cmd.Version=$(VERSION)
-
-
-## Source configs:
-SRC_FILES = $(shell find . -type f -name '*.go' -not -path "./vendor/*")
-SRC_PKGS = $(shell go list ./... | grep -v /vendor/)
-
-## Testing configs:
-TEST_TIMEOUT = 20s
-COVER_OUT = coverage.out
+## Custom Go linker flag.
+LDFLAGS = -X $(MODULE)/internal/info.Version=$(VERSION)
 
 
 
-## ------ COMMANDS -----
-.PHONY: default setup init
+## ----- TARGETS ------
+## Generic:
+.PHONY: default version setup install build clean run lint test review release \
+        help
 
-## Default target when no arguments are given to make (build and run program).
-default: build-run
+default: run
+version: ## Show project version (derived from 'git describe').
+	@echo $(VERSION)
 
-## Sets up this project on a new device.
-setup: hooks-setup
-	@if [ "$(SECRETS)" == true ]; then $(SECRETS_REVEAL_CM); fi
-	@if [ "$(MODULE)" == true ]; \
-	 then $(DL_CMD); \
-	 else $(GET_CMD); \
-	 fi
+setup: go-setup ## Set up this project on a new device.
+	@echo "Configuring githooks..." && \
+	 git config core.hooksPath .githooks && \
+	 echo done
 
-## Initializes this project from scratch.
-## Variables: MODPATH
-init: mod-init secrets-init goreleaser-init
+install: go-install ## Install project dependencies.
+build: go-build ## Build project.
+clean: go-clean ## Clean build artifacts.
+run: go-run ## Run project (development).
+lint: go-lint ## Lint and check code.
+test: go-test ## Run tests.
+review: go-review ## Lint code and run tests.
+release: gr-release ## Release / deploy this project.
 
-
-## [Git, git-secret]
-.PHONY: hooks-setup secrets-hide secrets-reveal
-
-## Configure Git to use .githooks (for shared githooks).
-hooks-setup:
-	@echo "Configuring githooks..."
-	@git config core.hooksPath .githooks && echo "done"
-
-## Initialize git-secret.
-secrets-init:
-	@if [ "$(SECRETS)" == true ]; then \
-	   echo "Initializing git-secret..." && \
-	   git-secret init; \
-	 fi
-
-## Hide modified secret files using git-secret.
-secrets-hide:
-	@echo "Hiding modified secret files..."
-	@git secret hide -m
-
-## Reveal files hidden by git-secret.
-SECRETS_REVEAL_CM = git secret reveal
-secrets-reveal:
-	@echo "Revealing hidden secret files..."
-	@$(SECRETS_REVEAL_CM)
+## Show usage for the targets in this Makefile.
+help:
+	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | \
+	   awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m%-15s\033[0m %s\n", $$1, $$2}'
 
 
-## [Go: modules]
-.PHONY: mod-init verify dl vendor tidy update fix
-
-## Initializes a Go module in the current directory.
-## Variables: MODPATH (module source path)
-MODPATH =
-mod-init:
-	@if [ "$(MODULE)" == true ]; then \
-	   echo "Initializing Go module..." && \
-	   go mod init $(MODPATH); \
-	 fi
-
-## Verifies that Go module dependencies are satisfied.
-VERIFY_CMD = echo "Verifying Go module dependencies..." && go mod verify
-verify:
-	@$(VERIFY_CMD)
-
-## Downloads Go module dependencies.
-DL_CMD = echo "Downloading Go module dependencies..." && \
-           go mod download && echo "done"
-dl:
-	@$(DL_CMD)
-
-## Vendors Go module dependencies.
-vendor:
-	@echo "Vendoring Go module dependencies..."
-	@go mod vendor && echo "done"
-
-## Tidies Go module dependencies.
-tidy:
-	@echo "Tidying Go module dependencies..."
-	@go mod tidy && echo "done"
-
-## Installs and updates package dependencies.
-## Variables:
-##   UMODE (Update Mode, choose between 'patch' and 'minor').
-UMODE =
-update:
-	@echo 'Updating module dependencies with "go get -u"...'
-	@go get -u $(UMODE) && echo "done"
-
-## Fixes deprecated Go code using "go fix", by rewriting old APIS to use
-## newer ones.
-fix:
-	@echo 'Fixing deprecated Go code with "go fix"... '
-	@go fix && echo "done"
+## CI:
+.PHONY: ci-install ci-test ci-deploy
+ci-install: go-install
+ci-test: go-test
+ci-deploy:
+	@echo "No deployment procedure defined."
 
 
-## [Go: legacy setup]
-.PHONY: get
+## Go:
+.PHONY: go-deps go-bench go-setup go-install go-build go-clean go-run go-lint \
+        go-test go-review
 
-## Downloads and installs all subpackages (legacy).
-GET_CMD = echo "Installing dependencies... " && \
-          go get ./... && echo "done"
-get:
-	@$(GET_CMD)
+go-deps: ## Verify and tidy project dependencies.
+	@echo "Verifying module dependencies..." && \
+	 go mod verify && \
+	 echo "Tidying module dependencies..." && \
+	 go mod tidy && \
+	 echo done
 
+go-bench: ## Run benchmarks.
+	@echo "Running benchmarks with 'go test -bench=.'..." && \
+	 $(__TEST) -run=^$$ -bench=. -benchmem ./...
 
-## [Go: setup, running]
-.PHONY: build build-all build-run generate run clean install
+go-setup: go-install go-deps
 
-## Runs the built program.
-## Sources .env.sh if it exists.
-## Variables: SRCENV (boolean which determines whether or not to check and
-##            source .env.sh)
-SRCENV = true
-OUTPATH = $(OUTDIR)/$(PKG_NAME)
-RUN_CMD = \
-	if [ -f ".env.sh" ] && [ "$(SRCENV)" == true ]; then \
-	  echo 'Configuring environment variables by sourcing ".env.sh"...' && \
-	  . .env.sh && \
-	  printf "done\n\n"; \
-	fi; \
-	if [ -f "$(OUTPATH)" ]; then \
-	  echo 'Running "$(PKG_NAME)"...' && \
-	  ./$(OUTPATH); \
-	else \
-	  echo 'run: could not find program "$(OUTPATH)".' >&2; \
-	  exit 1; \
-	fi
-run:
-	@$(RUN_CMD)
+go-install:
+	@echo "Downloading module dependencies..." && \
+	 go mod download && \
+	 echo done
 
-generate:
-	@if [ "$(GENERATE)" == true ]; then \
-	   echo "Generating Go code using 'go generate'..." && \
-	   go generate ./...; \
-	 fi
+BUILDARGS = -ldflags "$(LDFLAGS)" $(BARGS)
+BDIR = .
+go-build:
+	@echo "Building with 'go build'..." && \
+	 go build $(BUILDARGS) $(BDIR) && \
+	 echo done
 
-## Builds (compiles) the program for this system.
-## Variables:
-##   - OUTDIR (output directory to place built binaries)
-##   - MAINDIR (directory of the main package)
-##   - BUILDARGS (additional arguments to pass to "go build")
-BUILDARGS =
-BUILD_CMD = \
-	echo 'Building "$(PKG_NAME)" for this system...' && \
-	go build \
-	  -o "$$(echo $(OUTDIR) | tr -s '/')/$(PKG_NAME)" \
-	  -ldflags "$(LDFLAGS)" \
-	  $(BUILDARGS) $(MAINDIR) && \
-	echo "done"
-build: generate
-	@$(BUILD_CMD)
+go-clean:
+	@echo "Cleaning with 'go clean'..." && \
+	 go clean $(BDIR) && \
+	 echo done
 
-## Builds (cross-compiles) the program for all systems.
-## Variables:
-##   - OUTDIR (output path to place built binaries)
-##   - MAINDIR (directory of the main package)
-##   - BUILDARGS (additional arguments to pass to "go build")
-build-all: generate
-	@echo 'Building "$(PKG_NAME)" for all systems:'
-	@for GOOS in darwin linux windows; do \
-	   for GOARCH in amd64 386; do \
-	     printf "Building GOOS=$$GOOS GOARCH=$$GOARCH... " && \
-	     OUTNAME="$(PKG_NAME)-$$GOOS-$$GOARCH"; \
-	     if [ $$GOOS == windows ]; then \
-	       OUTNAME="$$OUTNAME.exe"; \
-	     fi; \
-	     GOBUILD_OUT="$$(GOOS=$$GOOS GOARCH=$$GOARCH && \
-	       go build \
-	         -o "$$(echo $(OUTDIR) | tr -s '/')/$$OUTNAME" \
-	         -ldflags "$(LDFLAGS)" \
-	         $(BUILDARGS) $(MAINDIR) 2>&1)"; \
-	     if [ -n "$$GOBUILD_OUT" ]; then \
-	       printf "\nError during build:\n" >&2 && \
-	        echo "$$GOBUILD_OUT" >&2 && \
-	        exit 1; \
-	     else printf "\tdone\n"; \
-	     fi; \
-	   done; \
-	 done
+go-run:
+	@echo "Running with 'go run'..." && \
+	 go run $(BUILDARGS) $(BDIR)
 
-## Builds (compiles) the program for this system, and runs it.
-## Sources .env.sh before running, if it exists.
-build-run:
-	@$(BUILD_CMD) && echo "" && $(RUN_CMD)
+go-lint:
+	@if command -v goimports > /dev/null; then \
+	   echo "Formatting code with 'goimports'..." && goimports -w .; \
+	 else \
+	   echo "'goimports' not installed, formatting code with 'go fmt'..." && \
+	   go fmt .; \
+	 fi && \
+	 if command -v golint > /dev/null; then \
+	   echo "Linting code with 'golint'..." && golint ./...; \
+	 else \
+	   echo "'golint' not installed, skipping linting step."; \
+	 fi && \
+	 echo "Checking code with 'go vet'..." && go vet ./... && \
+	 echo done
 
-## Cleans build artifacts (executables, object files, etc.).
-clean:
-	@echo 'Cleaning build artifacts with "go clean"...'
-	@go clean && echo "done"
+COVERFILE = coverage.out
+TIMEOUT   = 20s
+TARGS = -race
+__TEST = go test ./... -coverprofile="$(COVERFILE)" -covermode=atomic \
+                       -timeout="$(TIMEOUT)" $(TARGS)
+go-test:
+	@echo "Running tests with 'go test':" && $(__TEST)
 
-## Installs the program using "go install".
-install:
-	@echo 'Installing program using "go install"... '
-	@go install && echo "done"
+go-review: go-lint go-test
 
 
-## [Go: code checking]
-.PHONY: fmt lint vet check
+## Goreleaser:
+.PHONY: gr-release gr-snapshot
+__GR = MODULE="$(MODULE)" LDFLAGS="$(LDFLAGS)" goreleaser --rm-dist
 
-## Formats the source code using "gofmt".
-FMT_CMD = \
-	if ! command -v gofmt > /dev/null; then \
-	  echo '"gofmt" is required to format source code.'; \
-	else \
-	  echo 'Formatting source code using "gofmt"...' && \
-	  gofmt -l -s -w . && echo "done"; \
-	fi
-fmt:
-	@$(FMT_CMD)
+gr-release:
+	@echo "Releasing with 'goreleaser'..." && $(__GR)
 
-## Lints the source code using "golint".
-LINT_CMD = \
-	if ! command -v golint > /dev/null; then \
-	  echo '"golint" is required to lint soure code.' >&2; \
-	else \
-	  echo 'Formatting source code using "golint"...' && \
-	  golint ./... && echo "done"; \
-	fi
-lint:
-	@$(LINT_CMD)
-
-## Checks for suspicious code using "go vet".
-VET_CMD = echo 'Checking for suspicious code using "go vet"...' && \
-	      go vet && echo "done"
-vet:
-	@$(VET_CMD)
-
-## Checks for formatting, linting, and suspicious code.
-CHECK_CMD = $(FMT_CMD) && echo "" && $(LINT_CMD) && echo "" && $(VET_CMD)
-check:
-	@$(CHECK_CMD)
-
-
-## [Go: testing]
-.PHONY: test test-v test-race test-race-v bench bench-v
-
-TEST_CMD = go test ./... -coverprofile=$(COVER_OUT) \
-                         -covermode=atomic \
-                         -timeout=$(TEST_TIMEOUT)
-test:
-	@echo "Testing:"
-	@$(TEST_CMD)
-test-v:
-	@echo "Testing (verbose):"
-	@$(TEST_CMD) -v
-
-TEST_CMD_RACE = $(TEST_CMD) -race
-test-race:
-	@echo "Testing (race):"
-	@$(TEST_CMD_RACE)
-test-race-v:
-	@echo "Testing (race, verbose):"
-	@$(TEST_CMD_RACE) -v
-
-BENCH_CMD = $(TEST_CMD) ./... -run=^$$ -bench=. -benchmem
-bench:
-	@echo "Benchmarking:"
-	@$(BENCH_CMD)
-bench-v:
-	@echo "Benchmarking (verbose):"
-	@$(BENCH_CMD) -v
-
-
-## [Go: reviewing]
-.PHONY: review review-race review-bench
-__review_base:
-	@$(VERIFY_CMD) && echo "" && $(CHECK_CMD) && echo ""
-
-## Formats, checks, and tests the code.
-review: __review_base test
-review-v: __review_base test-v
-
-## Like "review", but tests for race conditions.
-review-race: __review_base test-race
-review-race-v: __review_base test-race-v
-
-## Like "review-race", but includes benchmarks.
-review-bench: review-race bench
-review-bench-v: review-race bench-v
-
-
-## [Goreleaser]
-.PHONY: goreleaser-init release
-
-goreleaser-init:
-	@if [ "$(GORELEASER)" == true ]; then \
-	   echo "Initializing goreleaser..." && \
-	   goreleaser init; \
-	 fi
-
-release:
-	@echo "Releasing with 'goreleaser'..." && goreleaser --rm-dist
-
-snapshot:
-	@echo "Making snapshot with 'goreleaser'..." && \
-	   goreleaser --snapshot --rm-dist
+gr-snapshot: ## Make a snapshot release.
+	@echo "Making snapshot with 'goreleaser'..." && $(__GR) --snapshot

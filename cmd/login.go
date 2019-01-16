@@ -3,11 +3,10 @@ package cmd
 import (
 	"fmt"
 
-	"gopkg.in/alecthomas/kingpin.v2"
-
 	"github.com/stevenxie/begone/internal/config"
 	"github.com/stevenxie/begone/internal/interact"
 	ess "github.com/unixpickle/essentials"
+	kingpin "gopkg.in/alecthomas/kingpin.v2"
 )
 
 func registerLoginCmd(app *kingpin.Application) {

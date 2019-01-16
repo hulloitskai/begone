@@ -1,31 +1,15 @@
 language: go
-
 go:
   - '1.11'
   - tip
-
-git:
-  depth: 3
 
 os:
   - osx
   - linux
   - windows
 
-env:
-  global:
-    - GO111MODULE=on
-    - GOPATH="${TRAVIS_HOME}/gopath"
-    - GOBIN="${GOPATH}/bin"
-    - GOLINT="${GOBIN}/golint"
-    - PATH="${GOBIN}:${PATH}"
-
-cache:
-  directories:
-    ## Preserve golint executable.
-    - $GOBIN
-    ## Preserve Go module cache.
-    - $GOPATH/pkg/mod/cache
+git:
+  depth: 3
 
 ## Mark Go version 'tip' as an optional.
 matrix:
@@ -34,42 +18,40 @@ matrix:
       os: windows
   allow_failures:
     - go: 'tip'
-    - os: windows
   fast_finish: true
 
 ## Install dependencies and code review tools.
 before_install:
-  - echo "GOBIN=$GOBIN" "GOLINT_BIN=$GOLINT_BIN"
-
-  ## Install golint, if no installation cache exists.
-  - |
-    if [ "$TRAVIS_OS_NAME" != windows ]; then
-      if ! command -v golint > /dev/null; then
-        rm -rf $GOLINT_BIN
-        echo "Installing 'golint'..."
-        GO111MODULE=off go get -u golang.org/x/lint/golint
-      fi
-      command -v golint
-    fi
+  - export GOBIN="${GOPATH}/bin"
+  - ./scripts/tools.sh
+  - git fetch --tags
 
 ## Install all dependencies.
-install:
-  - |
-    if [ "$TRAVIS_OS_NAME" == windows ]; then
-      go mod download
-    else
-      make dl
-    fi
-
-## List diagnostic information before running tests.
-before_script:
-  - go env
+install: |
+  export GO111MODULE=on
+  if [ "$TRAVIS_OS_NAME" == windows ]; then
+    mingw32-make ci-install
+  else
+    make ci-install
+  fi
 
 ## Check code, ensure there are no build errors.
-script:
-  - |
-    if [ "$TRAVIS_OS_NAME" == windows ]; then
-      go build -o quest.exe && quest.exe --version
-    else
-      make check && make build && ./quest --version
-    fi
+script: |
+  if [ "$TRAVIS_OS_NAME" == windows ]; then
+    mingw32-make ci-test
+  else
+    make ci-test
+  fi
+
+# after_success:
+#   - |
+#     if [ "$TRAVIS_OS_NAME" == linux ]; then
+#       bash <(curl -s https://codecov.io/bash)
+#     fi
+
+cache:
+  directories:
+    ## Preserve golint executable.
+    - $GOBIN
+    ## Preserve Go module cache.
+    - ${GOPATH}/pkg/mod/cache

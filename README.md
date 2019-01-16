@@ -15,7 +15,7 @@ Messenger client. And, like all my CLI programs, written in
 
 <br />
 <p align="center">
-  <img src="./.github/demo.gif" width=600>
+  <img src="./docs/demo.gif" width=600>
 </p>
 
 #### Project Status:
@@ -105,15 +105,7 @@ the extreme amount of damage this might cause if used regularly._
 > `brew install go`!
 
 ```bash
-## Clone this repository.
-$ git clone git@github.com:stevenxie/begone.git
-$ cd begone
-
-## Install module dependencies.
-$ make dl  # (or go mod download)
-
-## Compile and install a version for your machine.
-$ make install  # (or go install)
+go get -u github.com/stevenxie/begone
 ```
 
 ## FAQ

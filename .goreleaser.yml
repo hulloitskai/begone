@@ -1,9 +1,7 @@
 ## Scripts to run before anything else..
 before:
   hooks:
-    - go mod download
-    ## If Go code needs to be generated:
-    # - go generate ./...
+    - make install
 
 ## Configure how the binaries are built.
 builds:
@@ -15,12 +13,12 @@ builds:
       - linux
 
     ldflags:
-      - "-X github.com/stevenxie/{{.ProjectName}}/cmd.Version={{.Version}}"
+      - "{{ .Env.LDFLAGS }}"
 
 
 ## Create an archive with built binaries and the README, license, etc.
 archive:
-  name_template: "{{.ProjectName}}-{{.Version}}-{{.Os}}-{{.Arch}}"
+  name_template: "{{ .ProjectName }}-{{ .Version }}-{{ .Os }}-{{ .Arch }}"
   wrap_in_directory: true
 
   replacements:
@@ -36,11 +34,11 @@ archive:
     - goos: linux
       format: tar.gz
 
+
   files:
     - LICENSE*
     - README*
     - autocomplete/**/*
-    - resources/**/*
 
 ## Create a checksums file to allow verifying the integrity of the downloads.
 checksum:
@@ -56,11 +54,11 @@ changelog:
 
 ## Create a project snapshot without releasing.
 snapshot:
-  name_template: "{{.ShortCommit}}-SNAPSHOT"
+  name_template: "{{ .ShortCommit }}-SNAPSHOT"
 
 ## Release to Github Releases.
 release:
-  name_template: "{{.ProjectName}}-{{.Tag}}"
+  name_template: "{{ .ProjectName }}-{{ .Tag }}"
 
 ## Release to Homebrew.
 brew:

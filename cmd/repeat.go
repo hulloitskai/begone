@@ -6,12 +6,11 @@ import (
 	"io/ioutil"
 	"os"
 
-	"gopkg.in/alecthomas/kingpin.v2"
-
 	"github.com/stevenxie/begone/internal/interact"
 	"github.com/stevenxie/begone/pkg/mbot"
 	"github.com/stevenxie/begone/pkg/strgen"
 	ess "github.com/unixpickle/essentials"
+	kingpin "gopkg.in/alecthomas/kingpin.v2"
 )
 
 func registerRepeatCmd(app *kingpin.Application) {

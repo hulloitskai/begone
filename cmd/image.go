@@ -6,10 +6,9 @@ import (
 	"path/filepath"
 	str "strings"
 
-	"gopkg.in/alecthomas/kingpin.v2"
-
 	"github.com/stevenxie/begone/pkg/mbot"
 	ess "github.com/unixpickle/essentials"
+	kingpin "gopkg.in/alecthomas/kingpin.v2"
 )
 
 func registerImageCmd(app *kingpin.Application) {
