@@ -64,11 +64,11 @@ func (b *Bot) extractFBEntity(convoURL string) (*fbEntity, error) {
 	}
 	html = html[definesIndex:]
 
-	convoIDIndex := strings.Index(html, id)
-	if convoIDIndex == -1 {
-		return nil, fmt.Errorf("couldn't find convoID '%s' in HTML response", id)
+	usernameIndex := strings.Index(html, fmt.Sprintf(`"username":"%s"`, id))
+	if usernameIndex == -1 {
+		return nil, fmt.Errorf("couldn't find username '%s' in HTML response", id)
 	}
-	html = html[:convoIDIndex]
+	html = html[:usernameIndex]
 
 	fbidOpenIndex := strings.LastIndex(html, "\"id\":\"")
 	if fbidOpenIndex == -1 {

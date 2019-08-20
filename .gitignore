@@ -1,6 +1,4 @@
 ## [Repository]
-coverage.out
-
 ## The compiled binary (excluding Go source files):
 /build/
 /dist/
@@ -16,6 +14,8 @@ coverage.out
 
 
 ## [Go]
+coverage.out
+
 ## Binaries for programs and plugins:
 *.exe
 *.exe~
