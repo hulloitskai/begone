@@ -1,3 +1,11 @@
+> ## Archive Notice
+>
+> Due to a change in Facebook's private API that prevents authentication
+> (log-in) from working, this project is archived and will no longer be
+> maintained until further notice.
+>
+> So long, and thanks for all the fish!
+
 # begone
 
 _A fully automatic spamming tool, created for the sole purpose of obliterating
